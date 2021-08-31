@@ -65,7 +65,7 @@ MRH_ServerConnection* MRH_SRV_ConnectEx(MRH_Srv_Actor e_Client, const char* p_Ad
     p_Connection->p_Address = NULL;
     p_Connection->i_Port = i_Port;
     p_Connection->i_Socket = MRH_SRV_SOCKET_INVALID;
-    p_Connection->i_PlatformConnected = (e_Client == MRH_SRV_CLIENT_PLATFORM ? 0 : -1);
+    p_Connection->i_PlatformConnected = (e_Client != MRH_SRV_CLIENT_APP ? 0 : -1);
     p_Connection->i_AppConnected = (e_Client == MRH_SRV_CLIENT_APP ? 0 : -1);
     p_Connection->u8_DeviceType = (MRH_Uint8)e_Client;
     p_Connection->p_DeviceKey = NULL;

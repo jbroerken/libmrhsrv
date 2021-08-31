@@ -72,9 +72,9 @@ extern "C"
 // Revision
 //*************************************************************************************
 
-#define MRH_SERVER_LIB_VERSION_MAJOR                    1
-#define MRH_SERVER_LIB_VERSION_MINOR                    0
-#define MRH_SERVER_LIB_VERSION_PATCH                    0
+#define MRH_SERVER_LIB_VERSION_MAJOR 1
+#define MRH_SERVER_LIB_VERSION_MINOR 0
+#define MRH_SERVER_LIB_VERSION_PATCH 0
 
 
 #endif /* MRH_ServerRevision_h */
