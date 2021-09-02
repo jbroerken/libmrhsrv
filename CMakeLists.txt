@@ -106,8 +106,8 @@ set(LIB_INCLUDE_LIST "${INCLUDE_DIR_PATH}/mrhshared")
 add_library(libmrhsrv_Shared SHARED ${SRC_LIST_GLOBAL})
 set_target_properties(libmrhsrv_Shared
     				  PROPERTIES
-					  PREFIX ""
-					  OUTPUT_NAME "libmrhsrv"
+					  PREFIX "lib"
+					  OUTPUT_NAME "mrhsrv"
 					  SUFFIX ".so"
     				  ARCHIVE_OUTPUT_DIRECTORY ${BIN_DIR_PATH}
     				  LIBRARY_OUTPUT_DIRECTORY ${BIN_DIR_PATH}
@@ -116,8 +116,8 @@ set_target_properties(libmrhsrv_Shared
 add_library(libmrhsrv_Static STATIC ${SRC_LIST_GLOBAL})
 set_target_properties(libmrhsrv_Static
     				  PROPERTIES
-					  PREFIX ""
-					  OUTPUT_NAME "libmrhsrv"
+					  PREFIX "lib"
+					  OUTPUT_NAME "mrhsrv"
 					  SUFFIX ".a"
     				  ARCHIVE_OUTPUT_DIRECTORY ${BIN_DIR_PATH}
     				  LIBRARY_OUTPUT_DIRECTORY ${BIN_DIR_PATH}
