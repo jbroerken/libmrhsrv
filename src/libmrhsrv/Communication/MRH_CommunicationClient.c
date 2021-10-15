@@ -29,7 +29,6 @@
 // Project
 #include "../../../include/libmrhsrv/libmrhsrv/Communication/MRH_CommunicationClient.h"
 #include "../MRH_ServerConnectionInternal.h"
-#include "../MRH_ServerOpCode.h"
 
 
 //*************************************************************************************
@@ -41,7 +40,7 @@ int MRH_CC_SendHeartbeat(MRH_ServerConnection* p_Connection)
     return -1;
 }
 
-int MRH_CC_SendMessage(MRH_ServerConnection* p_Connection, const char* p_Message)
+int MRH_CC_SendOpCode(MRH_ServerConnection* p_Connection, MRH_Srv_OpCode e_OpCode, void* p_OpCodeData, size_t us_OpCodeSize)
 {
     return -1;
 }

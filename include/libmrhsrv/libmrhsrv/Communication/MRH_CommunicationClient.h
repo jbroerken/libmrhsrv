@@ -31,6 +31,7 @@
 
 // Project
 #include "../MRH_ServerConnection.h"
+#include "./MRH_CommunicationOpCode.h"
 
 
 #ifdef __cplusplus
@@ -53,15 +54,17 @@ extern "C"
     extern int MRH_CC_SendHeartbeat(MRH_ServerConnection* p_Connection);
     
     /**
-     *  Send a text message to the server.
+     *  Send a opcode to the server.
      *
      *  \param p_Connection The connection to send on.
-     *  \param p_Message The UTF-8 message string.
+     *  \param e_OpCode The OpCode type to send.
+     *  \param p_OpCodeData The OpCode data to send.
+     *  \param us_OpCodeSize The size of the opcode data to send.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    extern int MRH_CC_SendMessage(MRH_ServerConnection* p_Connection, const char* p_Message);
+    extern int MRH_CC_SendOpCode(MRH_ServerConnection* p_Connection, MRH_Srv_OpCode e_OpCode, void* p_OpCodeData, size_t us_OpCodeSize);
     
     //*************************************************************************************
     // Recieve

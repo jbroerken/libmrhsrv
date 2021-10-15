@@ -29,6 +29,7 @@ This project requires other libraries and headers to function:
 Dependency List:
 mrhshared: https://github.com/jbroerken/mrhshared/
 libsodium: https://github.com/jedisct1/libsodium/
+lsquic: https://github.com/litespeedtech/lsquic
 
 For more information about the requirements, check the "Building" section found in the documentation.
 

@@ -43,13 +43,10 @@ extern "C"
     typedef enum
     {
         MRH_SRV_CLIENT_APP = 0,
+        MRH_SRV_CLIENT_PLATFORM = 1,
         
-        MRH_SRV_CLIENT_PLATFORM_LISTEN = 1,
-        MRH_SRV_CLIENT_PLATFORM_SAY = 2,
-        MRH_SRV_CLIENT_PLATFORM_USER = 3,
-        
-        MRH_SRV_SERVER_CONNECTION = 4,
-        MRH_SRV_SERVER_COMMUNICATION = 5,
+        MRH_SRV_SERVER_CONNECTION = 2,
+        MRH_SRV_SERVER_COMMUNICATION = 3,
         
         MRH_SRV_ACTOR_MAX = MRH_SRV_SERVER_COMMUNICATION,
         

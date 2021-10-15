@@ -30,6 +30,7 @@
 
 // Project
 #include "./MRH_CommunicationAuth.h"
+#include "../../../include/libmrhsrv/libmrhsrv/Communication/MRH_CommunicationOpCode.h"
 
 
 //*************************************************************************************
