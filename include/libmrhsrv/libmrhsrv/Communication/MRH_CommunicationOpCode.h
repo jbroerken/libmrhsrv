@@ -30,13 +30,10 @@
 #include <MRH_Typedefs.h>
 
 // Project
+#include "../MRH_ServerSizes.h"
 
 // Pre-defined
 #define MRH_SRV_OPCODE_VERSION 1
-
-#define MRH_SRV_OPCODE_COM_CHANNEL_SIZE 128
-#define MRH_SRV_OPCODE_DEVICE_ID_SIZE 64
-#define MRH_SRV_OPCODE_ADDRESS_SIZE 512
 
 
 #ifdef __cplusplus
@@ -70,7 +67,8 @@ extern "C"
         MRH_SRV_CON_AUTH_CHALLENGE = 6,             // Challenge new connected client to provide valid connection details
         MRH_SRV_CON_AUTH_PROOF = 7,                 // Proof for valid client connection to connection server
         MRH_SRV_CON_AUTH_RESULT,                    // Authentification result of the connection server
-        MRH_SRV_CON_COM_TARGET,                     // The address and port of the communication server to connect to
+        MRH_SRV_CON_CHANNEL_REQUEST,                // Request the address and port for a communication channel
+        MRH_SRV_CON_CHANNEL_TARGET,                 // The address and port of the communication channel to connect to
         
         // Communication Server Auth
         MRH_SRV_COM_AUTH_REQUEST,                   // Client requests authentification to communication server
@@ -109,13 +107,11 @@ extern "C"
         MRH_SRV_OPCODE_ERR_UNK = 1,                     // ???
         
         MRH_SRV_OPCODE_ERR_NO_DEVICE = 2,               // No device found for device key
-        MRH_SRV_OPCODE_ERR_WRONG_ANSWER = 3,            // Answer to question was wrong
         MRH_SRV_OPCODE_ERR_VERSION = 3,                 // Wrong OpCode Version
         MRH_SRV_OPCODE_ERR_UNK_ACTOR = 4,               // Unknown actor id
-        MRH_SRV_OPCODE_ERR_MSG_SIZE = 5,                // Wrong / invalid message size
-        MRH_SRV_OPCODE_ERR_NONCE = 6,                   // Nonce was wrong
-        MRH_SRV_OPCODE_ERR_ALREADY_CONNECTED = 7,       // A connector for this already exists
-        MRH_SRV_OPCODE_ERR_FULL = 8,                    // Server is full
+        MRH_SRV_OPCODE_ERR_NONCE = 5,                   // Nonce was wrong
+        MRH_SRV_OPCODE_ERR_ALREADY_CONNECTED = 6,       // A connector for this already exists
+        MRH_SRV_OPCODE_ERR_FULL = 7,                    // Server is full
         MRH_SRV_OPCODE_ERR_MAINTENANCE,                 // Temporary downtime
         
         // Bounds
@@ -183,7 +179,6 @@ extern "C"
     typedef struct MRH_SRV_OPCODE_CON_AUTH_REQUEST_t
     {
         MRH_Uint8 u8_Actor; // Which type of client (platform or app)
-        char p_Channel[MRH_SRV_OPCODE_COM_CHANNEL_SIZE]; // Which type of communication server to target
         
     }MRH_SRV_OPCODE_CON_AUTH_REQUEST;
     
@@ -193,7 +188,7 @@ extern "C"
     typedef struct MRH_SRV_OPCODE_CON_AUTH_PROOF_t
     {
         MRH_Uint32 u32_OpCodeVer; // Ignore outdated or future
-        char p_DeviceID[MRH_SRV_OPCODE_DEVICE_ID_SIZE]; // Needed to get the right communication server
+        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Needed to get the right communication servers and check validity
         
     }MRH_SRV_OPCODE_CON_AUTH_PROOF;
     
@@ -204,13 +199,21 @@ extern "C"
         
     }MRH_SRV_OPCODE_CON_AUTH_Result;
     
-    // MRH_SRV_CON_COM_TARGET
-    typedef struct MRH_SRV_OPCODE_CON_COM_TARGET_t
+    // MRH_SRV_CON_CHANNEL_REQUEST
+    typedef struct MRH_SRV_OPCODE_CON_CHANNEL_REQUEST_t
     {
-        char p_Address[MRH_SRV_OPCODE_ADDRESS_SIZE];
+        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL];
+        
+    }MRH_SRV_OPCODE_CON_CHANNEL_REQUEST;
+    
+    // MRH_SRV_CON_CHANNEL_TARGET
+    typedef struct MRH_SRV_OPCODE_CON_CHANNEL_TARGET_t
+    {
+        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL];
+        char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
         MRH_Uint32 u32_Port;
         
-    }MRH_SRV_OPCODE_CON_COM_TARGET;
+    }MRH_SRV_OPCODE_CON_CHANNEL_TARGET;
     
     //
     // Communication Server Auth
@@ -225,8 +228,7 @@ extern "C"
     {
         MRH_Uint8 u8_Actor; // Which type of client (platform or app)
         // @NOTE: Opcode Ver checked by connection server
-        char p_DeviceID[MRH_SRV_OPCODE_DEVICE_ID_SIZE]; // Needed to get the right communication server
-        MRH_Uint32 u32_MessageSize; // The server message sizes
+        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Verify valid device and pair correctly
         
     }MRH_SRV_OPCODE_COM_AUTH_PROOF_CON;
     
@@ -268,7 +270,7 @@ extern "C"
         MRH_Uint8 u8_Type; // 0 = Chunk, 1 = End
         MRH_Uint32 u32_ID; // 0 - XX
         MRH_Uint32 u32_Part; // 0 - XX
-        char* p_Buffer; // Size given on auth proof
+        char p_Buffer[MRH_SRV_SIZE_CHANNEL_SPEECH_BUFFER]; // UTF-8
         
     }MRH_SRV_OPCODE_MSG_CHUNK;
     

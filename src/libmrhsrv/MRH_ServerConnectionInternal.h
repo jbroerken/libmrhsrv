@@ -31,6 +31,7 @@
 
 // Project
 #include "../../include/libmrhsrv/libmrhsrv/MRH_ServerConnection.h"
+#include "../../include/libmrhsrv/libmrhsrv/MRH_ServerSizes.h"
 
 // Pre-defined
 #define MRH_SRV_SOCKET_INVALID -1
@@ -42,44 +43,17 @@ extern "C"
 #endif
     
     //*************************************************************************************
-    // Messages
+    // Server
     //*************************************************************************************
     
-    typedef struct MRH_Srv_MessageChunk_t
+    typedef struct MRH_Srv_Server_t
     {
-        MRH_Uint8 u8_Type;
-        MRH_Uint32 u32_Part;
-        char* p_Buffer; // Size = connection message size
+        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL];
+        char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
+        int i_Port;
+        int i_Socket;
         
-    }MRH_Srv_MessageChunk;
-    
-    typedef struct MRH_Srv_Message_t
-    {
-        MRH_Uint32 u32_ID;
-        size_t us_Chunks;
-        MRH_Srv_MessageChunk** p_Chunks;
-        
-    }MRH_Srv_Message;
-    
-    typedef struct MRH_Srv_MessageContainer_t
-    {
-        size_t us_Messages;
-        MRH_Srv_Message** p_Messages;
-        
-    }MRH_Srv_MessageContainer;
-    
-    //*************************************************************************************
-    // Location
-    //*************************************************************************************
-    
-    typedef struct MRH_Srv_LastLocation_t
-    {
-        MRH_Sfloat64 f64_Latitude;
-        MRH_Sfloat64 f64_Longtitude;
-        MRH_Sfloat64 f64_Elevation;
-        MRH_Sfloat64 f64_Facing;
-        
-    }MRH_Srv_LastLocation;
+    }MRH_Srv_Server;
     
     //*************************************************************************************
     // Connection
@@ -87,26 +61,18 @@ extern "C"
 
     struct MRH_Srv_Connection_t
     {
-        // Address
-        char* p_Address;
-        int i_Port;
-        int i_Socket;
+        // Servers
+        MRH_Srv_Server p_ConnectionServer;
+        MRH_Srv_Server p_Channels[MRH_SRV_SIZE_CHANNEL_COUNT + 1]; // Connection server = first channel
         
-        // Connection
+        // Connection Info
         int i_PlatformConnected;
         int i_AppConnected;
         
         // Device
         MRH_Uint8 u8_DeviceType;
-        char* p_DeviceKey;
-        char* p_Password;
-        
-        // Message Info
-        MRH_Uint32 u32_MessageSize; // Buffer bytes
-        MRH_Srv_MessageContainer c_MessageContainer;
-        
-        // Location
-        MRH_Srv_LastLocation c_LastLocation;
+        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY];
+        char p_DevicePassword[MRH_SRV_SIZE_DEVICE_PASSWORD];
         
         // Timings
         MRH_Uint32 u32_ConnectionTimeoutS;

@@ -58,13 +58,45 @@ int MRH_ATH_ConnectCommunicationServer(MRH_ServerConnection* p_Connection)
 // Disconnect
 //*************************************************************************************
 
-int MRH_ATH_Disconnect(MRH_ServerConnection* p_Connection)
+static int MRH_ATG_DisconnectServer(MRH_Srv_Server* p_Server)
 {
-    if (p_Connection == NULL || p_Connection->i_Socket == MRH_SRV_SOCKET_INVALID || close(p_Connection->i_Socket) < 0)
+    if (p_Server->i_Socket == MRH_SRV_SOCKET_INVALID)
+    {
+        // Success, already closed
+        return 0;
+    }
+    
+    // @TODO: Send Disconnect, wait for sending complete (but not for result)
+    
+    // Now notified, close
+    if (close(p_Server->i_Socket) < 0)
     {
         return -1;
     }
     
-    p_Connection->i_Socket = MRH_SRV_SOCKET_INVALID;
+    p_Server->i_Socket = MRH_SRV_SOCKET_INVALID;
+    return 0;
+}
+
+int MRH_ATH_Disconnect(MRH_ServerConnection* p_Connection)
+{
+    // Connection server connected?
+    if (p_Connection->p_ConnectionServer.i_Socket != MRH_SRV_SOCKET_INVALID)
+    {
+        if (MRH_ATG_DisconnectServer(&(p_Connection->p_ConnectionServer)) != 0)
+        {
+            return -1;
+        }
+    }
+    
+    // Disconnect from all communication channels
+    for (int i = 0; i < MRH_SRV_SIZE_CHANNEL_COUNT; ++i)
+    {
+        if (MRH_ATG_DisconnectServer(&(p_Connection->p_Channels[i])) != 0)
+        {
+            return -1;
+        }
+    }
+    
     return 0;
 }

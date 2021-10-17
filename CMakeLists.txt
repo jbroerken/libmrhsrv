@@ -75,6 +75,7 @@ set(SRC_LIST_GLOBAL "${SRC_DIR_PATH}/libmrhsrv/Error/MRH_ServerError.c"
 					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv/MRH_Server.h"
 					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv/MRH_ServerConnection.h"
 					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv/MRH_ServerActor.h"
+					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv/MRH_ServerSizes.h"
 					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv/MRH_ServerRevision.h"
 					"${INCLUDE_DIR_PATH}/libmrhsrv/libmrhsrv.h")
 					

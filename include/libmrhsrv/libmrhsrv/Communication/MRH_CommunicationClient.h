@@ -40,6 +40,17 @@ extern "C"
 #endif
     
     //*************************************************************************************
+    // Types
+    //*************************************************************************************
+    
+    typedef struct MRH_Srv_RecievedOpCode_t
+    {
+        MRH_Srv_OpCode e_OpCode;
+        void* p_OpCodeData;
+        
+    }MRH_Srv_RecievedOpCode;
+    
+    //*************************************************************************************
     // Send
     //*************************************************************************************
 
@@ -76,10 +87,10 @@ extern "C"
      *  \param p_Connection The connection to recieve on.
      *  \param u32_TimeoutMS The recieve timeout in milliseconds.
      *
-     *  \return 0 if data was recieved, 1 if no message was recieved, -1 on error.
+     *  \return The recieved data on success, NULL on failure or no data recieved.
      */
     
-    extern int MRH_CC_RecieveData(MRH_ServerConnection* p_Connection, MRH_Uint32 u32_TimeoutMS);
+    extern MRH_Srv_RecievedOpCode* MRH_CC_RecieveData(MRH_ServerConnection* p_Connection, MRH_Uint32 u32_TimeoutMS);
     
     //*************************************************************************************
     // Getters

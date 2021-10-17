@@ -49,9 +49,9 @@ int MRH_CC_SendOpCode(MRH_ServerConnection* p_Connection, MRH_Srv_OpCode e_OpCod
 // Recieve
 //*************************************************************************************
 
-int MRH_CC_RecieveData(MRH_ServerConnection* p_Connection, MRH_Uint32 u32_TimeoutMS)
+MRH_Srv_RecievedOpCode* MRH_CC_RecieveData(MRH_ServerConnection* p_Connection, MRH_Uint32 u32_TimeoutMS)
 {
-    return -1;
+    return NULL;
 }
 
 //*************************************************************************************
