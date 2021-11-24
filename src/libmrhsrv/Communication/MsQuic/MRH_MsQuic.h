@@ -21,49 +21,54 @@
  *  3. This notice may not be removed or altered from any source distribution.
  */
 
+#ifndef MRH_MsQuic_h
+#define MRH_MsQuic_h
+
 // C
-#include <time.h>
 
 // External
 
 // Project
-#include "../../../include/libmrhsrv/libmrhsrv/Communication/MRH_CommunicationClient.h"
-#include "../MRH_ServerConnectionInternal.h"
+#include "./MRH_MsQuicContext.h"
 
 
 //*************************************************************************************
-// Send
+// Connection Callback
 //*************************************************************************************
 
-int MRH_CC_SendHeartbeat(MRH_ServerConnection* p_Connection)
-{
-    return -1;
-}
+/**
+ *  MsQuic connection callback.
+ *
+ *  \param Connection The connection for the callback.
+ *  \param Context The provided connection context.
+ *  \param Event The recieved connection event.
+ *
+ *  \return The callback result.
+ */
 
-int MRH_CC_SendOpCode(MRH_ServerConnection* p_Connection, MRH_Srv_OpCode e_OpCode, void* p_OpCodeData, size_t us_OpCodeSize)
-{
-    return -1;
-}
-
-//*************************************************************************************
-// Recieve
-//*************************************************************************************
-
-MRH_Srv_RecievedOpCode* MRH_CC_RecieveData(MRH_ServerConnection* p_Connection, MRH_Uint32 u32_TimeoutMS)
-{
-    return NULL;
-}
+extern
+_IRQL_requires_max_(DISPATCH_LEVEL)
+_Function_class_(QUIC_CONNECTION_CALLBACK)
+QUIC_STATUS QUIC_API MRH_MsQuicConnectionCallback(_In_ HQUIC Connection, _In_opt_ void* Context, _Inout_ QUIC_CONNECTION_EVENT* Event);
 
 //*************************************************************************************
-// Getters
+// Stream Callback
 //*************************************************************************************
 
-MRH_Uint64 MRH_CC_GetNextHeartbeatS(const MRH_ServerConnection* p_Connection)
-{
-    if (time(NULL) >= p_Connection->u64_NextHeartbeatS)
-    {
-        return 0;
-    }
-    
-    return p_Connection->u64_NextHeartbeatS - time(NULL);
-}
+/**
+ *  MsQuic stream callback.
+ *
+ *  \param Stream The stream for the callback.
+ *  \param Context The provided stream context.
+ *  \param Event The recieved stream event.
+ *
+ *  \return The callback result.
+ */
+
+extern
+_IRQL_requires_max_(DISPATCH_LEVEL)
+_Function_class_(QUIC_STREAM_CALLBACK)
+QUIC_STATUS QUIC_API MRH_MsQuicStreamCallback(_In_ HQUIC Stream, _In_opt_ void* Context, _Inout_ QUIC_STREAM_EVENT* Event);
+
+
+#endif /* MRH_MsQuic_h */

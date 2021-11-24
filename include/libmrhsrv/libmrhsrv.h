@@ -30,8 +30,7 @@
 
 // Project
 #include "./libmrhsrv/Error/MRH_ServerError.h"
-#include "./libmrhsrv/Communication/MRH_CommunicationApp.h"
-#include "./libmrhsrv/Communication/MRH_CommunicationPlatform.h"
+#include "./libmrhsrv/Communication/MRH_ServerCommunication.h"
 #include "./libmrhsrv/MRH_Server.h"
 #include "./libmrhsrv/MRH_ServerRevision.h"
 

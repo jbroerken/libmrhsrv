@@ -72,6 +72,44 @@ const char* MRH_ERR_GetServerErrorString(void)
         case MRH_SERVER_ERROR_GENERAL_MALLOC:
             return "Memory allocation failed";
             
+        // Encryption
+        case MRH_SERVER_ERROR_ENCRYPTION_FAILED:
+            return "Failed to perform encryption algorithm";
+        case MRH_SERVER_ERROR_ENCRYPTION_PW_HASH_MEM:
+            return "PW hash algorithm ran out of memory";
+            
+        // MsQuic
+        case MRH_SERVER_ERROR_MSQUIC_API_TABLE:
+            return "MsQuic api table setup failed";
+        case MRH_SERVER_ERROR_MSQUIC_REGISTRATION:
+            return "MsQuic registration setup failed";
+        case MRH_SERVER_ERROR_MSQUIC_CONFIGURATION:
+            return "MsQuic configuration setup failed";
+            
+        // Auth
+        case MRH_SERVER_ERROR_AUTH_CONNECTION_CREATE:
+            return "Failed to create the connection";
+        case MRH_SERVER_ERROR_AUTH_CONNECTION_START:
+            return "Failed to start the connection";
+            
+        // Recieve
+            
+        // Send
+        case MRH_SERVER_ERROR_SEND_INVALID_MESSAGE:
+            return "Specified message unknown or unsendable";
+        case MRH_SERVER_ERROR_SEND_NO_CONNECTION:
+            return "The connection doesn't exist";
+        case MRH_SERVER_ERROR_SEND_DISCONNECTED:
+            return "The connection is closed";
+        case MRH_SERVER_ERROR_SEND_QUEUE_FULL:
+            return "No free messages to write to";
+        case MRH_SERVER_ERROR_SEND_STREAM_CREATE:
+            return "Failed to create stream to send";
+        case MRH_SERVER_ERROR_SEND_STREAM_START:
+            return "Failed to start stream to send";
+        case MRH_SERVER_ERROR_SEND_STREAM_SEND:
+            return "Failed to send quic stream data";
+            
         default:
             return NULL;
     }
@@ -81,7 +119,7 @@ const char* MRH_ERR_GetServerErrorString(void)
 // Setters
 //*************************************************************************************
 
-void MRH_ERR_SetServiceError(MRH_Server_Error_Type e_Error)
+void MRH_ERR_SetServerError(MRH_Server_Error_Type e_Error)
 {
     if (e_Error >= MRH_SERVER_ERROR_NONE && e_Error <= MRH_SERVER_ERROR_TYPE_MAX)
     {

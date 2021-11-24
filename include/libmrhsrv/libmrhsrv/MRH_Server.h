@@ -28,19 +28,20 @@
 #include <stdlib.h>
 
 // External
-#include <MRH_Typedefs.h>
 
 // Project
-#include "./MRH_ServerConnection.h"
-#include "./MRH_ServerActor.h"
+#include "./MRH_ServerTypes.h"
 #include "./MRH_ServerSizes.h"
 
 // Pre-defined
-#ifndef MRH_SRV_DEFAULT_TIMEOUT_S
-    #define MRH_SRV_DEFAULT_TIMEOUT_S 30
+#ifndef MRH_SRV_DEFAULT_TIMEOUT_MS
+    #define MRH_SRV_DEFAULT_TIMEOUT_MS 60 * 1000
 #endif
 #ifndef MRH_SRV_DEFAULT_PORT
     #define MRH_SRV_DEFAULT_PORT 16096
+#endif
+#ifndef MRH_SRV_DEFAULT_CONNECTION_CHANNEL
+    #define MRH_SRV_DEFAULT_CONNECTION_CHANNEL "de.mrh.connection"
 #endif
 
 
@@ -50,57 +51,55 @@ extern "C"
 #endif
     
     //*************************************************************************************
-    // Types
-    //*************************************************************************************
-
-    typedef struct MRH_Srv_ConnectionInfo_t
-    {
-        // Connection server info
-        char p_ConnectionAddress[MRH_SRV_SIZE_SERVER_ADDRESS];
-        int i_ConnectionPort;
-        
-        // Device info
-        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY];
-        char p_DevicePassword[MRH_SRV_SIZE_DEVICE_PASSWORD];
-        
-        // Communication channels
-        char p_Channels[MRH_SRV_SIZE_CHANNEL_COUNT][MRH_SRV_SIZE_SERVER_CHANNEL];
-        
-        // Server Setting
-        MRH_Uint32 u32_TimeoutS;
-        
-    }MRH_Srv_ConnectionInfo;
-    
-    //*************************************************************************************
-    // Connect
+    // Context
     //*************************************************************************************
 
     /**
-     *  Connect a client to the server using the default message size and connection timeout.
-     *  This call will block the calling thread until the communication server has been
-     *  reached.
+     *  Initialize the server connection object to use.
      *
      *  \param e_Client The client type.
-     *  \param p_Info The connection info to connect with.
+     *  \param i_TimeoutMS The connection timeout in milliseconds.
      *
-     *  \return The established connection on success, NULL on failure.
+     *  \return The connection object on success, NULL on failure.
      */
     
-    extern MRH_ServerConnection* MRH_SRV_Connect(MRH_Srv_Actor e_Client, const MRH_Srv_ConnectionInfo* p_Info);
-    
-    //*************************************************************************************
-    // Disconnect
-    //*************************************************************************************
+    extern MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_TimeoutMS);
     
     /**
-     *  Disconnect a client from the server.
+     *  Destroy a library context object.
      *
-     *  \param p_Connection The connection to disconnect.
+     *  \param p_Context The context to destroy.
      *
      *  \return Always NULL.
      */
     
-    extern MRH_ServerConnection* MRH_SRV_Disconnect(MRH_ServerConnection* p_Connection);
+    extern MRH_Srv_Context* MRH_SRV_Destroy(MRH_Srv_Context* p_Context);
+    
+    //*************************************************************************************
+    // Server
+    //*************************************************************************************
+    
+    /**
+     *  Create a new server object.
+     *
+     *  \param p_Context The context to use.
+     *  \param p_Channel The channel name of the server.
+     *  \param i_MessageSize The amount of messages for read and write stored.
+     *
+     *  \return The new server object on success, NULL on failure.
+     */
+    
+    extern MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_Channel);
+    
+    /**
+     *  Destroy a server object. The server will disconnect before destruction.
+     *
+     *  \param p_Server The server to destroy.
+     *
+     *  \return Always NULL.
+     */
+    
+    extern MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Server* p_Server);
     
 #ifdef __cplusplus
 }

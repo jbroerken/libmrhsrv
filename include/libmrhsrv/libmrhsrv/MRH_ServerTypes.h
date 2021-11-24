@@ -21,15 +21,14 @@
  *  3. This notice may not be removed or altered from any source distribution.
  */
 
-#ifndef MRH_CommunicationAuth_h
-#define MRH_CommunicationAuth_h
+#ifndef MRH_ServerConnection_h
+#define MRH_ServerConnection_h
 
 // C
 
 // External
 
 // Project
-#include "../MRH_ServerConnectionInternal.h"
 
 
 #ifdef __cplusplus
@@ -38,45 +37,36 @@ extern "C"
 #endif
 
     //*************************************************************************************
-    // Connect
+    // Objects
     //*************************************************************************************
+
+    // Opaque pointer
+    struct MRH_Srv_Context_t;
+    typedef struct MRH_Srv_Context_t MRH_Srv_Context;
     
-    /**
-     *  Connect to the connection server.
-     *
-     *  \param p_Connection The connection to connect with.
-     *
-     *  \return 0 on success, -1 on failure.
-     */
-    
-    extern int MRH_ATH_ConnectConnectionServer(MRH_ServerConnection* p_Connection);
-    
-    /**
-     *  Connect to the communication server.
-     *
-     *  \param p_Connection The connection to connect with.
-     *
-     *  \return 0 on success, -1 on failure.
-     */
-    
-    extern int MRH_ATH_ConnectCommunicationServer(MRH_ServerConnection* p_Connection);
+    struct MRH_Srv_Server_t;
+    typedef struct MRH_Srv_Server_t MRH_Srv_Server;
     
     //*************************************************************************************
-    // Disconnect
+    // Actors
     //*************************************************************************************
     
-    /**
-     *  Disconnect the current connection.
-     *
-     *  \param p_Connection The connect to disconnect.
-     *
-     *  \return 0 on success, -1 on failure.
-     */
-    
-    extern int MRH_ATH_Disconnect(MRH_ServerConnection* p_Connection);
+    typedef enum
+    {
+        MRH_SRV_CLIENT_APP = 0,
+        MRH_SRV_CLIENT_PLATFORM = 1,
+        
+        MRH_SRV_SERVER_CONNECTION = 2,
+        MRH_SRV_SERVER_COMMUNICATION = 3,
+        
+        MRH_SRV_ACTOR_MAX = MRH_SRV_SERVER_COMMUNICATION,
+        
+        MRH_SRV_ACTOR_COUNT = MRH_SRV_ACTOR_MAX + 1
+        
+    }MRH_Srv_Actor;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* MRH_CommunicationAuth_h */
+#endif /* MRH_ServerConnection_h */

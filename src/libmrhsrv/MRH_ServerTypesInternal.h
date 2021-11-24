@@ -21,8 +21,8 @@
  *  3. This notice may not be removed or altered from any source distribution.
  */
 
-#ifndef MRH_ServerConnectionInternal_h
-#define MRH_ServerConnectionInternal_h
+#ifndef MRH_ServerTypesInternal_h
+#define MRH_ServerTypesInternal_h
 
 // C
 
@@ -30,11 +30,13 @@
 #include <MRH_Typedefs.h>
 
 // Project
-#include "../../include/libmrhsrv/libmrhsrv/MRH_ServerConnection.h"
+#include "../../include/libmrhsrv/libmrhsrv/MRH_ServerTypes.h"
 #include "../../include/libmrhsrv/libmrhsrv/MRH_ServerSizes.h"
+#include "./Communication/MsQuic/MRH_MsQuicContext.h"
 
 // Pre-defined
-#define MRH_SRV_SOCKET_INVALID -1
+#define MRH_SRV_CONNECTION_SERVER_POS 0
+#define MRH_SRV_PORT_INVALID -1
 
 
 #ifdef __cplusplus
@@ -48,10 +50,19 @@ extern "C"
     
     typedef struct MRH_Srv_Server_t
     {
+        // Address
         char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL];
         char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
         int i_Port;
-        int i_Socket;
+        
+        // Client
+        MRH_Uint8 u8_DeviceType;
+        
+        // Connection context
+        MRH_MsQuicConnection* p_MsQuic;
+        
+        // Timings
+        int i_TimeoutMS;
         
     }MRH_Srv_Server;
     
@@ -59,25 +70,18 @@ extern "C"
     // Connection
     //*************************************************************************************
 
-    struct MRH_Srv_Connection_t
+    struct MRH_Srv_Context_t
     {
-        // Servers
-        MRH_Srv_Server p_ConnectionServer;
-        MRH_Srv_Server p_Channels[MRH_SRV_SIZE_CHANNEL_COUNT + 1]; // Connection server = first channel
+        // MsQuic
+        const QUIC_API_TABLE* p_MsQuicAPI;
+        HQUIC p_MsQuicRegistration;
+        HQUIC p_MsQuicConfiguration;
         
-        // Connection Info
-        int i_PlatformConnected;
-        int i_AppConnected;
-        
-        // Device
+        // Client
         MRH_Uint8 u8_DeviceType;
-        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY];
-        char p_DevicePassword[MRH_SRV_SIZE_DEVICE_PASSWORD];
         
         // Timings
-        MRH_Uint32 u32_ConnectionTimeoutS;
-        MRH_Uint32 u32_HeartbeatTimerS; // The timer to add after a heartbeat
-        MRH_Uint64 u64_NextHeartbeatS; // Timepoint in seconds by system time
+        int i_TimeoutMS;
     };
 
 #ifdef __cplusplus
@@ -85,4 +89,4 @@ extern "C"
 #endif
 
 
-#endif /* MRH_ServerConnectionInternal_h */
+#endif /* MRH_ServerTypesInternal_h */

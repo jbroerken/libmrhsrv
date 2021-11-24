@@ -27,19 +27,24 @@
 // C
 
 // External
+#include <sodium.h>
 
 // Project
 
 // Pre-defined
-#define MRH_SRV_SIZE_SERVER_ADDRESS 512
-#define MRH_SRV_SIZE_SERVER_CHANNEL 256
+#define MRH_SRV_SIZE_SERVER_ADDRESS 256
+#define MRH_SRV_SIZE_SERVER_CHANNEL 64
 
-#define MRH_SRV_SIZE_DEVICE_KEY 512
-#define MRH_SRV_SIZE_DEVICE_PASSWORD 1024
+#define MRH_SRV_SIZE_ACCOUNT_MAIL 256
+#define MRH_SRV_SIZE_ACCOUNT_PASSWORD crypto_secretbox_KEYBYTES // Max key length
+#define MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT crypto_pwhash_SALTBYTES // Salt used for pw hash
 
-#define MRH_SRV_SIZE_CHANNEL_COUNT 2 // Excludes connection server
+#define MRH_SRV_SIZE_NONCE_HASH crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES + sizeof(uint32_t) // Hashed nonce bytes
 
-#define MRH_SRV_SIZE_CHANNEL_SPEECH_BUFFER 512
+#define MRH_SRV_SIZE_DEVICE_KEY 64
+#define MRH_SRV_SIZE_DEVICE_PASSWORD 256
+
+#define MRH_SRV_SIZE_MESSAGE_BUFFER 2048 // Recieve / send size
 
 
 #endif /* MRH_ServerSizes_h */

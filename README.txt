@@ -9,7 +9,7 @@
 ##
 
 The libmrhsrv library is used to connect to and interact with the MRH connection and communication servers. 
-It provides a way to manage the connection and handles the opcodes used during communication.
+It provides a way to manage the connection and handles the messages used during communication.
 
 
 ##
@@ -29,7 +29,7 @@ This project requires other libraries and headers to function:
 Dependency List:
 mrhshared: https://github.com/jbroerken/mrhshared/
 libsodium: https://github.com/jedisct1/libsodium/
-lsquic: https://github.com/litespeedtech/lsquic
+msquic: https://github.com/microsoft/msquic/
 
 For more information about the requirements, check the "Building" section found in the documentation.
 
