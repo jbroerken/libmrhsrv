@@ -35,6 +35,7 @@
 #include "./MRH_NetMessageV1.h"
 
 // Pre-defined
+#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
 #ifdef __APPLE__
     #define bswap_16(x) OSSwapInt16(x)
     #define bswap_32(x) OSSwapInt32(x)
@@ -70,9 +71,10 @@ void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMes
            &(p_Buffer[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT]),
            sizeof(uint32_t));
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
+    }
 }
 
 void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_PROOF_DATA* p_NetMessage)
@@ -115,16 +117,19 @@ void FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PA
     p_Buffer[0] = MRH_SRV_C_MSG_PAIR_CHALLENGE;
     ++p_Buffer;
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    uint32_t u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
-    memcpy(p_Buffer,
-           &u32_Nonce,
-           sizeof(uint32_t));
-#else
-    memcpy(p_Buffer,
-           &(p_NetMessage->u32_Nonce),
-           sizeof(uint32_t));
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        uint32_t u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
+        memcpy(p_Buffer,
+               &u32_Nonce,
+               sizeof(uint32_t));
+    }
+    else
+    {
+        memcpy(p_Buffer,
+               &(p_NetMessage->u32_Nonce),
+               sizeof(uint32_t));
+    }
 }
 
 void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -135,9 +140,10 @@ void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMes
            p_Buffer,
            sizeof(uint32_t));
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
+    }
 }
 
 void FROM_MRH_SRV_C_MSG_PAIR_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage)
@@ -223,9 +229,10 @@ void TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE(MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA* p_Ne
            &(p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL + MRH_SRV_SIZE_SERVER_ADDRESS]),
            sizeof(uint16_t));
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    p_NetMessage->u16_Port = bswap_16(p_NetMessage->u16_Port);
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        p_NetMessage->u16_Port = bswap_16(p_NetMessage->u16_Port);
+    }
 }
 
 //*************************************************************************************
@@ -255,7 +262,6 @@ void TO_MRH_SRV_C_MSG_TEXT(MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage, const uint8_t*
 // Location
 //*************************************************************************************
 
-#if __BYTE_ORDER == __BIG_ENDIAN
 static inline float SwapFloatBytes(float f32_Source)
 {
     char p_Result[4];
@@ -268,7 +274,6 @@ static inline float SwapFloatBytes(float f32_Source)
     
     return *((float*)p_Result);
 }
-#endif
 
 void FROM_MRH_SRV_C_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage)
 {
@@ -279,38 +284,41 @@ void FROM_MRH_SRV_C_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_C_MSG_LOCATION
     p_Buffer[0] = MRH_SRV_C_MSG_LOCATION;
     ++p_Buffer;
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    float f32_Latitude = SwapFloatBytes(p_NetMessage->f32_Latitude);
-    float f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
-    float f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
-    float f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
-    
-    memcpy(p_Buffer,
-           &f32_Latitude,
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float)]),
-           &f32_Longtitude,
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float) * 2]),
-           &f32_Elevation,
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float) * 3]),
-           &f32_Facing,
-           sizeof(float));
-#else
-    memcpy(p_Buffer,
-           &(p_NetMessage->f32_Latitude),
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float)]),
-           &(p_NetMessage->f32_Longtitude),
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float) * 2]),
-           &(p_NetMessage->f32_Elevation),
-           sizeof(float));
-    memcpy(&(p_Buffer[sizeof(float) * 3]),
-           &(p_NetMessage->f32_Facing),
-           sizeof(float));
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        float f32_Latitude = SwapFloatBytes(p_NetMessage->f32_Latitude);
+        float f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
+        float f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
+        float f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
+        
+        memcpy(p_Buffer,
+               &f32_Latitude,
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float)]),
+               &f32_Longtitude,
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 2]),
+               &f32_Elevation,
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 3]),
+               &f32_Facing,
+               sizeof(float));
+    }
+    else
+    {
+        memcpy(p_Buffer,
+               &(p_NetMessage->f32_Latitude),
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float)]),
+               &(p_NetMessage->f32_Longtitude),
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 2]),
+               &(p_NetMessage->f32_Elevation),
+               sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 3]),
+               &(p_NetMessage->f32_Facing),
+               sizeof(float));
+    }
 }
 
 void TO_MRH_SRV_C_MSG_LOCATION(MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -330,12 +338,13 @@ void TO_MRH_SRV_C_MSG_LOCATION(MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage, const 
            &(p_Buffer[sizeof(float) * 3]),
            sizeof(float));
     
-#if __BYTE_ORDER == __BIG_ENDIAN
-    p_NetMessage->f32_Latitude = SwapFloatBytes(p_NetMessage->f32_Latitude);
-    p_NetMessage->f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
-    p_NetMessage->f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
-    p_NetMessage->f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
-#endif
+    if (IS_BIG_ENDIAN)
+    {
+        p_NetMessage->f32_Latitude = SwapFloatBytes(p_NetMessage->f32_Latitude);
+        p_NetMessage->f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
+        p_NetMessage->f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
+        p_NetMessage->f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
+    }
 }
 
 //*************************************************************************************
