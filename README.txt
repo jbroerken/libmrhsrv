@@ -27,7 +27,6 @@ Library Dependencies:
 This project requires other libraries and headers to function:
 
 Dependency List:
-mrhshared: https://github.com/jbroerken/mrhshared/
 libsodium: https://github.com/jedisct1/libsodium/
 msquic: https://github.com/microsoft/msquic/
 
