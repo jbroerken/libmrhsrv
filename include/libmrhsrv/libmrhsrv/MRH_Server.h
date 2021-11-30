@@ -58,12 +58,13 @@ extern "C"
      *  Initialize the server connection object to use.
      *
      *  \param e_Client The client type.
+     *  \param i_MaxServerCount The maximum number of servers creatable.
      *  \param i_TimeoutMS The connection timeout in milliseconds.
      *
      *  \return The connection object on success, NULL on failure.
      */
     
-    extern MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_TimeoutMS);
+    extern MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int i_TimeoutMS);
     
     /**
      *  Destroy a library context object.
@@ -94,12 +95,13 @@ extern "C"
     /**
      *  Destroy a server object. The server will disconnect before destruction.
      *
+     *  \param p_Context The context to use.
      *  \param p_Server The server to destroy.
      *
      *  \return Always NULL.
      */
     
-    extern MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Server* p_Server);
+    extern MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server);
     
 #ifdef __cplusplus
 }

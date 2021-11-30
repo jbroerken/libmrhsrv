@@ -45,7 +45,7 @@
 // Context
 //*************************************************************************************
 
-MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_TimeoutMS)
+MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int i_TimeoutMS)
 {
     if (e_Client == MRH_SRV_SERVER_CONNECTION ||
         e_Client == MRH_SRV_SERVER_COMMUNICATION)
@@ -98,7 +98,7 @@ MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_TimeoutMS)
     // Got registration, setup configuration
     memset(&c_CredConfig, 0, sizeof(c_CredConfig));
     
-    c_Settings.PeerUnidiStreamCount = MRH_SRV_MESSAGE_BUFFER_COUNT * 2; // Send + Recieve
+    c_Settings.PeerUnidiStreamCount = i_MaxServerCount * (MRH_SRV_MESSAGE_BUFFER_COUNT * 2); // Send + Recieve
     c_Settings.IsSet.PeerUnidiStreamCount = TRUE;
     //c_Settings.PeerBidiStreamCount = 1024;
     //c_Settings.IsSet.PeerBidiStreamCount = TRUE;
@@ -154,6 +154,8 @@ MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_TimeoutMS)
     p_Context->p_MsQuicConfiguration = p_MsQuicConfiguration;
     
     // Set connection info
+    p_Context->i_ServerMax = i_MaxServerCount;
+    p_Context->i_ServerCur = 0;
     p_Context->u8_DeviceType = (MRH_Uint8)e_Client;
     p_Context->i_TimeoutMS = i_TimeoutMS;
     
@@ -196,7 +198,8 @@ MRH_Srv_Context* MRH_SRV_Destroy(MRH_Srv_Context* p_Context)
 MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_Channel)
 {
     if (p_Context == NULL ||
-        p_Channel == NULL || strlen(p_Channel) == 0 || strlen(p_Channel) > MRH_SRV_SIZE_SERVER_CHANNEL)
+        p_Channel == NULL || strlen(p_Channel) == 0 || strlen(p_Channel) > MRH_SRV_SIZE_SERVER_CHANNEL ||
+        p_Context->i_ServerCur == p_Context->i_ServerMax)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return NULL;
@@ -224,12 +227,14 @@ MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_C
     p_Server->u8_DeviceType = p_Context->u8_DeviceType;
     p_Server->i_TimeoutMS = p_Context->i_TimeoutMS;
     
+    p_Context->i_ServerCur += 1;
+    
     return p_Server;
 }
 
-MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Server* p_Server)
+MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server)
 {
-    if (p_Server == NULL)
+    if (p_Context == NULL || p_Server == NULL)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return NULL;
@@ -241,6 +246,12 @@ MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Server* p_Server)
     // Clean up
     MRH_MsQuicDestroyConnection(p_Server->p_MsQuic);
     free(p_Server);
+    
+    // Reduce server count
+    if (p_Context->i_ServerCur > 0)
+    {
+        p_Context->i_ServerCur -= 1;
+    }
     
     return NULL;
 }

@@ -77,6 +77,10 @@ extern "C"
         HQUIC p_MsQuicRegistration;
         HQUIC p_MsQuicConfiguration;
         
+        // Server
+        int i_ServerMax;
+        int i_ServerCur;
+        
         // Client
         MRH_Uint8 u8_DeviceType;
         
