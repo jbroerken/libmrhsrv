@@ -73,6 +73,8 @@ const char* MRH_ERR_GetServerErrorString(void)
             return "Memory allocation failed";
             
         // Encryption
+        case MRH_SERVER_ERROR_ENCRYPTION_INIT:
+            return "Failed to intialize encryption library";
         case MRH_SERVER_ERROR_ENCRYPTION_FAILED:
             return "Failed to perform encryption algorithm";
         case MRH_SERVER_ERROR_ENCRYPTION_PW_HASH_MEM:

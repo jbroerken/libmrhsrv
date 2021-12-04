@@ -54,6 +54,13 @@ MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int 
         return NULL;
     }
     
+    // Sodium
+    if (sodium_init() != 0)
+    {
+        MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_INIT);
+        return NULL;
+    }
+    
     //
     //  MsQuic
     //
