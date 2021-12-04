@@ -104,7 +104,7 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8
     }
     
     // First, create the hashed password
-    unsigned char p_FullSalt[crypto_box_SEEDBYTES] = { '\0' };
+    unsigned char p_FullSalt[crypto_pwhash_SALTBYTES] = { '\0' };
     memcpy(p_FullSalt, p_Salt, strlen(p_Salt));
     
     unsigned char p_Key[crypto_box_SEEDBYTES] = { '\0' };
