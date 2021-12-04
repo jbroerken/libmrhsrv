@@ -151,6 +151,7 @@ extern "C"
     {
         char p_Salt[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT]; // Salt to use for pw hash
         uint32_t u32_Nonce; // Nonce to hash
+        uint8_t u8_HashType;
         
     }MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA;
     

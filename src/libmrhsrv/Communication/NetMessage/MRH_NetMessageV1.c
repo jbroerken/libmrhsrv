@@ -75,6 +75,8 @@ void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMes
     {
         p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
     }
+    
+    p_NetMessage->u8_HashType = p_Buffer[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT + sizeof(uint32_t)];
 }
 
 void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_PROOF_DATA* p_NetMessage)

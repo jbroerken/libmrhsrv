@@ -93,7 +93,7 @@ int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const 
     return -1;
 }
 
-int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p_Password, const char* p_Salt)
+int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8_HashType, const char* p_Password, const char* p_Salt)
 {
     if (p_Buffer == NULL ||
         p_Password == NULL || strlen(p_Password) > MRH_SRV_SIZE_ACCOUNT_PASSWORD ||
@@ -109,14 +109,31 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char
     
     unsigned char p_Key[crypto_box_SEEDBYTES] = { '\0' };
     
+    unsigned long long ull_OpsLimit;
+    size_t us_MemLimit;
+    int i_Alg;
+    
+    switch (u8_HashType)
+    {
+        case 0:
+            ull_OpsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE;
+            us_MemLimit = crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE;
+            i_Alg = crypto_pwhash_ALG_ARGON2ID13;
+            break;
+            
+        default:
+            MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
+            return -1;
+    }
+    
     if (crypto_pwhash(p_Key,
                       crypto_box_SEEDBYTES,
                       p_Password,
                       strlen(p_Password),
                       p_FullSalt,
-                      crypto_pwhash_OPSLIMIT_INTERACTIVE,
-                      crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE,
-                      crypto_pwhash_ALG_DEFAULT) != 0)
+                      ull_OpsLimit,
+                      us_MemLimit,
+                      i_Alg) != 0)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_PW_HASH_MEM);
         return -1;
