@@ -106,15 +106,20 @@ extern "C"
         // Unk
         MRH_SRV_NET_MESSAGE_ERR_UNK = 1,                        // ???
         
+        // Server Generall
+        MRH_SRV_NET_MESSAGE_ERR_SG_ERROR = 2,                   // Internal server error
+        
         // Server Auth
-        MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE = 2,               // No device found for device key
-        MRH_SRV_NET_MESSAGE_ERR_SA_VERSION = 3,                 // Wrong OpCode Version
-        MRH_SRV_NET_MESSAGE_ERR_SA_UNK_ACTOR = 4,               // Unknown actor id
-        MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 5,                 // Account data given was wrong
-        MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 6,       // A connecting for this already exists
-        MRH_SRV_NET_MESSAGE_ERR_SA_FULL = 7,                    // Server is full
-        MRH_SRV_NET_MESSAGE_ERR_SA_NO_PLATFORM,                 // No platform client found for app client
+        MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE = 3,               // No device found for device key
+        MRH_SRV_NET_MESSAGE_ERR_SA_VERSION = 4,                 // Wrong OpCode Version
+        MRH_SRV_NET_MESSAGE_ERR_SA_UNK_ACTOR = 5,               // Unknown actor id
+        MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 6,                 // Account data given was wrong
         MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE,                 // Temporary downtime
+        
+        // Channel
+        MRH_SRV_NET_MESSAGE_ERR_CR_NO_CHANNEL,                  // No channel was found for identifier
+        MRH_SRV_NET_MESSAGE_ERR_CR_FULL,                        // All channels are full
+        MRH_SRV_NET_MESSAGE_ERR_CR_NO_PLATFORM,                 // No platform client found for app client
         
         // Device Auth
         MRH_SRV_NET_MESSAGE_ERR_DA_PAIR,                        // Device pairing failed
@@ -142,6 +147,7 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_AUTH_REQUEST_DATA_t
     {
+        char p_Mail[MRH_SRV_SIZE_ACCOUNT_MAIL]; // The account mail
         uint8_t u8_Actor;  // Which type of client (platform or app)
         uint8_t u8_Version; // NetMessage version in use
         
@@ -157,7 +163,6 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_AUTH_PROOF_DATA_t
     {
-        char p_Mail[MRH_SRV_SIZE_ACCOUNT_MAIL]; // The account mail
         char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Device valid for server
         
@@ -176,12 +181,12 @@ extern "C"
     typedef struct MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA_t
     {
         uint32_t u32_Nonce;
+        uint8_t u8_Actor; // Type of partner to pair with
         
     }MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA;
     
     typedef struct MRH_SRV_C_MSG_PAIR_PROOF_DATA_t
     {
-        uint8_t u8_Actor; // Type of partner to pair with
         char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Password hashed nonce
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Target verification
         
@@ -199,7 +204,6 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA_t
     {
-        uint8_t u8_Actor; // Platform = Get free, App = Get Platform
         char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL]; // Requested channel
         
     }MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA;
@@ -208,7 +212,8 @@ extern "C"
     {
         char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL]; // Requested channel
         char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
-        uint16_t u16_Port;
+        uint32_t u32_Port;
+        uint8_t u8_Result;
         
     }MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA;
     
@@ -241,13 +246,13 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_CUSTOM_DATA_t
     {
-        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER]; // Whatever the client sent
+        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the client sent
         
     }MRH_SRV_C_MSG_CUSTOM_DATA;
     
     typedef struct MRH_SRV_S_MSG_CUSTOM_DATA_t
     {
-        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER]; // Whatever the server sent
+        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the server sent
         
     }MRH_SRV_S_MSG_CUSTOM_DATA;
     

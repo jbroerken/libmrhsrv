@@ -163,7 +163,7 @@ MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int 
     // Set connection info
     p_Context->i_ServerMax = i_MaxServerCount;
     p_Context->i_ServerCur = 0;
-    p_Context->u8_DeviceType = (MRH_Uint8)e_Client;
+    p_Context->u8_DeviceType = (uint8_t)e_Client;
     p_Context->i_TimeoutMS = i_TimeoutMS;
     
     // All done, now usable!

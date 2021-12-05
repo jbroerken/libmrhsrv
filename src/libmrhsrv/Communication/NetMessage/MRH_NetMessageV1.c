@@ -56,15 +56,19 @@ void FROM_MRH_SRV_C_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH
     p_Buffer[0] = MRH_SRV_C_MSG_AUTH_REQUEST;
     ++p_Buffer;
     
-    p_Buffer[0] = p_NetMessage->u8_Actor;
-    p_Buffer[1] = p_NetMessage->u8_Version;
+    memcpy(p_Buffer,
+           &(p_NetMessage->p_Mail[0]),
+           MRH_SRV_SIZE_ACCOUNT_MAIL);
+    
+    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL] = p_NetMessage->u8_Actor;
+    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + 1] = p_NetMessage->u8_Version;
 }
 
 void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
-    memcpy(p_NetMessage->p_Salt,
+    memcpy(&(p_NetMessage->p_Salt[0]),
            p_Buffer,
            MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT);
     memcpy(&(p_NetMessage->u32_Nonce),
@@ -89,13 +93,10 @@ void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_P
     ++p_Buffer;
     
     memcpy(p_Buffer,
-           p_NetMessage->p_Mail,
-           MRH_SRV_SIZE_ACCOUNT_MAIL);
-    memcpy(&(p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL]),
-           p_NetMessage->p_NonceHash,
+           &(p_NetMessage->p_NonceHash[0]),
            MRH_SRV_SIZE_NONCE_HASH);
-    memcpy(&(p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_NONCE_HASH]),
-           p_NetMessage->p_DeviceKey,
+    memcpy(&(p_Buffer[MRH_SRV_SIZE_NONCE_HASH]),
+           &(p_NetMessage->p_DeviceKey[0]),
            MRH_SRV_SIZE_DEVICE_KEY);
 }
 
@@ -132,6 +133,8 @@ void FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PA
                &(p_NetMessage->u32_Nonce),
                sizeof(uint32_t));
     }
+    
+    p_Buffer[sizeof(uint32_t)] = p_NetMessage->u8_Actor;
 }
 
 void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -141,6 +144,8 @@ void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMes
     memcpy(&(p_NetMessage->u32_Nonce),
            p_Buffer,
            sizeof(uint32_t));
+    
+    p_NetMessage->u8_Actor = p_Buffer[sizeof(uint32_t)];
     
     if (IS_BIG_ENDIAN)
     {
@@ -157,12 +162,11 @@ void FROM_MRH_SRV_C_MSG_PAIR_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_P
     p_Buffer[0] = MRH_SRV_C_MSG_PAIR_PROOF;
     ++p_Buffer;
     
-    p_Buffer[0] = p_NetMessage->u8_Actor;
     memcpy(&(p_Buffer[1]),
-           p_NetMessage->p_NonceHash,
+           &(p_NetMessage->p_NonceHash[0]),
            MRH_SRV_SIZE_NONCE_HASH);
     memcpy(&(p_Buffer[1 + MRH_SRV_SIZE_NONCE_HASH]),
-           p_NetMessage->p_DeviceKey,
+           &(p_NetMessage->p_DeviceKey[0]),
            MRH_SRV_SIZE_DEVICE_KEY);
 }
 
@@ -170,11 +174,10 @@ void TO_MRH_SRV_C_MSG_PAIR_PROOF(MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage, co
 {
     ++p_Buffer;
     
-    p_NetMessage->u8_Actor = p_Buffer[0];
-    memcpy(&(p_NetMessage->p_NonceHash),
+    memcpy(&(p_NetMessage->p_NonceHash[0]),
            &(p_Buffer[1]),
            MRH_SRV_SIZE_NONCE_HASH);
-    memcpy(&(p_NetMessage->p_DeviceKey),
+    memcpy(&(p_NetMessage->p_DeviceKey[0]),
            &(p_Buffer[1 + MRH_SRV_SIZE_NONCE_HASH]),
            MRH_SRV_SIZE_DEVICE_KEY);
 }
@@ -212,29 +215,30 @@ void FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_C
     ++p_Buffer;
     
     memcpy(p_Buffer,
-           p_NetMessage->p_Channel,
+           &(p_NetMessage->p_Channel[0]),
            MRH_SRV_SIZE_SERVER_CHANNEL);
-    p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL] = p_NetMessage->u8_Actor;
 }
 
 void TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE(MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
-    memcpy(p_NetMessage->p_Channel,
+    memcpy(&(p_NetMessage->p_Channel[0]),
            p_Buffer,
            MRH_SRV_SIZE_SERVER_CHANNEL);
-    memcpy(p_NetMessage->p_Address,
+    memcpy(&(p_NetMessage->p_Address[0]),
            &(p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL]),
            MRH_SRV_SIZE_SERVER_ADDRESS);
-    memcpy(&(p_NetMessage->u16_Port),
+    memcpy(&(p_NetMessage->u32_Port),
            &(p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL + MRH_SRV_SIZE_SERVER_ADDRESS]),
-           sizeof(uint16_t));
+           sizeof(uint32_t));
     
     if (IS_BIG_ENDIAN)
     {
-        p_NetMessage->u16_Port = bswap_16(p_NetMessage->u16_Port);
+        p_NetMessage->u32_Port = bswap_32(p_NetMessage->u32_Port);
     }
+    
+    p_NetMessage->u8_Result = p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL + MRH_SRV_SIZE_SERVER_ADDRESS + sizeof(uint32_t)];
 }
 
 //*************************************************************************************
@@ -247,7 +251,7 @@ void FROM_MRH_SRV_C_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_TEXT_DATA* p
     ++p_Buffer;
     
     memcpy(p_Buffer,
-           p_NetMessage->p_String,
+           &(p_NetMessage->p_String[0]),
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
 
@@ -255,7 +259,7 @@ void TO_MRH_SRV_C_MSG_TEXT(MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage, const uint8_t*
 {
     ++p_Buffer;
     
-    memcpy(p_NetMessage->p_String,
+    memcpy(&(p_NetMessage->p_String[0]),
            p_Buffer,
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
@@ -359,7 +363,7 @@ void FROM_MRH_SRV_C_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CUSTOM_DAT
     ++p_Buffer;
     
     memcpy(p_Buffer,
-           p_NetMessage->p_Buffer,
+           &(p_NetMessage->p_Buffer[0]),
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
 
@@ -376,7 +380,7 @@ void TO_MRH_SRV_S_MSG_CUSTOM(MRH_SRV_S_MSG_CUSTOM_DATA* p_NetMessage, const uint
 {
     ++p_Buffer;
     
-    memcpy(p_NetMessage->p_Buffer,
+    memcpy(&(p_NetMessage->p_Buffer[0]),
            p_Buffer,
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }

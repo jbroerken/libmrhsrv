@@ -64,6 +64,8 @@ extern "C"
      *  \param u8_HashType The type of hash to use for the password.
      *  \param p_Password The account password to hash with.
      *  \param p_Salt The password hash salt to use.
+     *
+     *  \return 0 on success, -1 on failure.
      */
     
     extern int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8_HashType, const char* p_Password, const char* p_Salt);

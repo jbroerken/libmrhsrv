@@ -27,7 +27,6 @@
 // C
 
 // External
-#include <MRH_Typedefs.h>
 
 // Project
 #include "../../include/libmrhsrv/libmrhsrv/MRH_ServerTypes.h"
@@ -56,7 +55,7 @@ extern "C"
         int i_Port;
         
         // Client
-        MRH_Uint8 u8_DeviceType;
+        uint8_t u8_DeviceType;
         
         // Connection context
         MRH_MsQuicConnection* p_MsQuic;
@@ -82,7 +81,7 @@ extern "C"
         int i_ServerCur;
         
         // Client
-        MRH_Uint8 u8_DeviceType;
+        uint8_t u8_DeviceType;
         
         // Timings
         int i_TimeoutMS;
