@@ -181,13 +181,13 @@ extern "C"
     typedef struct MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA_t
     {
         uint32_t u32_Nonce;
-        uint8_t u8_Actor; // Type of partner to pair with
+        uint8_t u8_Actor; // Type of partner expected to pair with
         
     }MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA;
     
     typedef struct MRH_SRV_C_MSG_PAIR_PROOF_DATA_t
     {
-        char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Password hashed nonce
+        char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Client password hashed nonce
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Target verification
         
     }MRH_SRV_C_MSG_PAIR_PROOF_DATA;

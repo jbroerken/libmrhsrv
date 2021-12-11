@@ -39,6 +39,7 @@
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD crypto_secretbox_KEYBYTES // Max key length
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT crypto_pwhash_SALTBYTES // Salt used for pw hash
 
+#define MRH_SRV_SIZE_PASSWORD_HASH crypto_box_SEEDBYTES // Hashed password size
 #define MRH_SRV_SIZE_NONCE_HASH crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES + sizeof(uint32_t) // Hashed nonce bytes
 
 #define MRH_SRV_SIZE_DEVICE_KEY 64

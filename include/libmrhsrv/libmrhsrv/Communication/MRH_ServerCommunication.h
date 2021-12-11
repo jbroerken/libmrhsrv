@@ -56,19 +56,31 @@ extern "C"
     extern int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port);
     
     /**
-     *  Create a nonce hash with the account password. The given buff has to be
-     *  MRH_SRV_SIZE_NONCE_HASH bytes large.
+     *  Create a password hash with a provided salt. The given buffer has to be
+     *  MRH_SRV_SIZE_PASSWORD_HASH bytes large.
      *
-     *  \param p_Buffer The nonce hash buffer.
-     *  \param u32_Nonce The nonce to hash.
-     *  \param u8_HashType The type of hash to use for the password.
+     *  \param p_Buffer The password hash buffer.
      *  \param p_Password The account password to hash with.
      *  \param p_Salt The password hash salt to use.
+     *  \param u8_HashType The type of hash to use for the password.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    extern int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8_HashType, const char* p_Password, const char* p_Salt);
+    extern int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const char* p_Salt, uint8_t u8_HashType);
+    
+    /**
+     *  Create a nonce hash with a given password password. The given buffer has to be
+     *  MRH_SRV_SIZE_NONCE_HASH bytes large.
+     *
+     *  \param p_Buffer The nonce hash buffer.
+     *  \param u32_Nonce The nonce to hash.
+     *  \param p_Password The account password to hash with.
+     *
+     *  \return 0 on success, -1 on failure.
+     */
+    
+    extern int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p_Password);
     
     /**
      *  Disconnect from a server.

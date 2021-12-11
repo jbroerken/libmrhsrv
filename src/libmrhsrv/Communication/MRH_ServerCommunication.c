@@ -35,6 +35,11 @@
 #include "./NetMessage/MRH_NetMessageV1.h"
 #include "./MsQuic/MRH_MsQuic.h"
 
+// Pre-defined
+#if crypto_box_SEEDBYTES != crypto_box_KEYBYTES /* Warn just in case, code relies on this! */
+    #error "Seed bytes not equal key bytes, encryption / decryption will fail!"
+#endif
+
 
 //*************************************************************************************
 // Connection
@@ -93,7 +98,7 @@ int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const 
     return -1;
 }
 
-int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8_HashType, const char* p_Password, const char* p_Salt)
+int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const char* p_Salt, uint8_t u8_HashType)
 {
     if (p_Buffer == NULL ||
         p_Password == NULL || strlen(p_Password) > MRH_SRV_SIZE_ACCOUNT_PASSWORD ||
@@ -103,11 +108,11 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8
         return -1;
     }
     
-    // First, create the hashed password
+    // Copy salt to match expected size
     unsigned char p_FullSalt[crypto_pwhash_SALTBYTES] = { '\0' };
     memcpy(p_FullSalt, p_Salt, strlen(p_Salt));
     
-    unsigned char p_Key[crypto_box_SEEDBYTES] = { '\0' };
+    memset(p_Buffer, '\0', MRH_SRV_SIZE_PASSWORD_HASH); /* @NOTE: = SEEDBYTES (32) which is KEYBYTES (32) */
     
     unsigned long long ull_OpsLimit;
     size_t us_MemLimit;
@@ -126,7 +131,7 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8
             return -1;
     }
     
-    if (crypto_pwhash(p_Key,
+    if (crypto_pwhash(p_Buffer,
                       crypto_box_SEEDBYTES,
                       p_Password,
                       strlen(p_Password),
@@ -139,7 +144,11 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8
         return -1;
     }
     
-    // Now with the key we encrypt the nonce
+    return 0;
+}
+
+int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p_Password)
+{
     unsigned char p_Nonce[crypto_secretbox_NONCEBYTES] = { '\0' };
     randombytes_buf(p_Nonce, crypto_secretbox_NONCEBYTES);
     memcpy(p_Buffer, p_Nonce, crypto_secretbox_NONCEBYTES);
@@ -148,7 +157,7 @@ int MRH_SRV_CreateAccNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, uint8_t u8
                               (const unsigned char*)&u32_Nonce,
                               sizeof(u32_Nonce),
                               p_Nonce,
-                              p_Key) != 0)
+                              (const unsigned char*)p_Password) != 0) /* @NOTE: KEYBYTES == SEEDBYTES (32) */
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
         return -1;
