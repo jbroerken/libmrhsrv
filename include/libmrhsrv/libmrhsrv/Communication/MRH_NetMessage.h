@@ -212,8 +212,8 @@ extern "C"
     {
         char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL]; // Requested channel
         char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
-        uint32_t u32_Port;
-        uint8_t u8_Result;
+        uint32_t u32_Port; // carries full int
+        uint8_t u8_Result; // 0 success, else failed (ignore other data)
         
     }MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA;
     

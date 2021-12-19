@@ -36,9 +36,11 @@
 #include "./MsQuic/MRH_MsQuic.h"
 
 // Pre-defined
-#if crypto_box_SEEDBYTES != crypto_box_KEYBYTES /* Warn just in case, code relies on this! */
+/*
+#if crypto_box_SEEDBYTES != crypto_box_KEYBYTES // Warn, code relies on this
     #error "Seed bytes not equal key bytes, encryption / decryption will fail!"
 #endif
+*/
 
 
 //*************************************************************************************
