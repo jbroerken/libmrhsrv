@@ -223,7 +223,7 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_TEXT_DATA_t
     {
-        char p_String[MRH_SRV_SIZE_MESSAGE_BUFFER]; // UTF-8
+        char p_String[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // UTF-8
         
     }MRH_SRV_C_MSG_TEXT_DATA;
     

@@ -35,17 +35,17 @@
 #define MRH_SRV_SIZE_SERVER_ADDRESS 256
 #define MRH_SRV_SIZE_SERVER_CHANNEL 64
 
-#define MRH_SRV_SIZE_ACCOUNT_MAIL 256
+#define MRH_SRV_SIZE_ACCOUNT_MAIL 128
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD crypto_secretbox_KEYBYTES // Max key length
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT crypto_pwhash_SALTBYTES // Salt used for pw hash
 
 #define MRH_SRV_SIZE_PASSWORD_HASH crypto_box_SEEDBYTES // Hashed password size
 #define MRH_SRV_SIZE_NONCE_HASH crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES + sizeof(uint32_t) // Hashed nonce bytes
 
-#define MRH_SRV_SIZE_DEVICE_KEY 64
-#define MRH_SRV_SIZE_DEVICE_PASSWORD 256
+#define MRH_SRV_SIZE_DEVICE_KEY 25
+#define MRH_SRV_SIZE_DEVICE_PASSWORD 32
 
-#define MRH_SRV_SIZE_MESSAGE_BUFFER 2048 // Recieve / send size
+#define MRH_SRV_SIZE_MESSAGE_BUFFER 1024 // Recieve / send size
 
 
 #endif /* MRH_ServerSizes_h */
