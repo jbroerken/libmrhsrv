@@ -338,6 +338,9 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* 
             break;
             
         // Device Auth
+        case MRH_SRV_C_MSG_PAIR_REQUEST:
+            TO_MRH_SRV_C_MSG_PAIR_REQUEST((MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Message, p_MessageBuffer);
+            break;
         case MRH_SRV_C_MSG_PAIR_CHALLENGE:
             TO_MRH_SRV_C_MSG_PAIR_CHALLENGE((MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Message, p_MessageBuffer);
             break;
@@ -448,6 +451,9 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
             break;
             
         // Device Auth
+        case MRH_SRV_C_MSG_PAIR_REQUEST:
+            FROM_MRH_SRV_C_MSG_PAIR_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Data);
+            break;
         case MRH_SRV_C_MSG_PAIR_CHALLENGE:
             FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Data);
             break;

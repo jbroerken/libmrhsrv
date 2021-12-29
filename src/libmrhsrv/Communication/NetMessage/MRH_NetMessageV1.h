@@ -77,6 +77,24 @@ extern void TO_MRH_SRV_S_MSG_AUTH_RESULT(MRH_SRV_S_MSG_AUTH_RESULT_DATA* p_NetMe
 //*************************************************************************************
 
 /**
+ *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_REQUEST net message.
+ *
+ *  \param p_Buffer The buffer to set.
+ *  \param p_NetMessage The net message to use.
+ */
+
+extern void FROM_MRH_SRV_C_MSG_PAIR_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage);
+
+/**
+ *  Set the data for a given MRH_SRV_C_MSG_PAIR_REQUEST net message with a given buffer.
+ *
+ *  \param p_NetMessage The net message to set.
+ *  \param p_Buffer The buffer to use.
+ */
+
+extern void TO_MRH_SRV_C_MSG_PAIR_REQUEST(MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage, const uint8_t* p_Buffer);
+
+/**
  *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_CHALLENGE net message.
  *
  *  \param p_Buffer The buffer to set.

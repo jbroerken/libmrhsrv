@@ -111,6 +111,23 @@ void TO_MRH_SRV_S_MSG_AUTH_RESULT(MRH_SRV_S_MSG_AUTH_RESULT_DATA* p_NetMessage, 
 // Device Auth
 //*************************************************************************************
 
+void FROM_MRH_SRV_C_MSG_PAIR_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage)
+{
+    memset(p_Buffer,
+           '\0',
+           MRH_SRV_SIZE_MESSAGE_BUFFER);
+    
+    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_CHALLENGE;
+    p_Buffer[1] = p_NetMessage->u8_Actor;
+}
+
+void TO_MRH_SRV_C_MSG_PAIR_REQUEST(MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage, const uint8_t* p_Buffer)
+{
+    ++p_Buffer;
+    
+    p_NetMessage->u8_Actor = p_Buffer[0];
+}
+
 void FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage)
 {
     memset(p_Buffer,

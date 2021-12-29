@@ -164,7 +164,7 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_AUTH_PROOF_DATA_t
     {
-        char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
+        uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Device valid for server
         
     }MRH_SRV_C_MSG_AUTH_PROOF_DATA;
@@ -179,16 +179,22 @@ extern "C"
     //  Device Auth
     //
     
+    typedef struct MRH_SRV_C_MSG_PAIR_REQUEST_DATA_t
+    {
+        uint8_t u8_Actor; // Type of client which wants to pair
+        
+    }MRH_SRV_C_MSG_PAIR_REQUEST_DATA;
+    
     typedef struct MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA_t
     {
         uint32_t u32_Nonce;
-        uint8_t u8_Actor; // Type of partner expected to pair with
+        uint8_t u8_Actor; // Type of client which will be paired with
         
     }MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA;
     
     typedef struct MRH_SRV_C_MSG_PAIR_PROOF_DATA_t
     {
-        char p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Client password hashed nonce
+        uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Client password hashed nonce
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Target verification
         
     }MRH_SRV_C_MSG_PAIR_PROOF_DATA;
@@ -247,13 +253,13 @@ extern "C"
     
     typedef struct MRH_SRV_C_MSG_CUSTOM_DATA_t
     {
-        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the client sent
+        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the client sent
         
     }MRH_SRV_C_MSG_CUSTOM_DATA;
     
     typedef struct MRH_SRV_S_MSG_CUSTOM_DATA_t
     {
-        char p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the server sent
+        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the server sent
         
     }MRH_SRV_S_MSG_CUSTOM_DATA;
     

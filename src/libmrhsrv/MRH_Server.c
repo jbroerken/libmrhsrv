@@ -205,7 +205,7 @@ MRH_Srv_Context* MRH_SRV_Destroy(MRH_Srv_Context* p_Context)
 MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_Channel)
 {
     if (p_Context == NULL ||
-        p_Channel == NULL || strlen(p_Channel) == 0 || strlen(p_Channel) > MRH_SRV_SIZE_SERVER_CHANNEL ||
+        p_Channel == NULL || strnlen(p_Channel, MRH_SRV_SIZE_SERVER_CHANNEL) == 0 ||
         p_Context->i_ServerCur == p_Context->i_ServerMax)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
@@ -228,7 +228,7 @@ MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_C
     
     memset(p_Server->p_Channel, '\0', MRH_SRV_SIZE_SERVER_CHANNEL);
     memset(p_Server->p_Address, '\0', MRH_SRV_SIZE_SERVER_ADDRESS);
-    strncpy(p_Server->p_Channel, p_Channel, strlen(p_Channel));
+    strncpy(p_Server->p_Channel, p_Channel, MRH_SRV_SIZE_SERVER_CHANNEL);
     
     p_Server->i_Port = MRH_SRV_PORT_INVALID;
     p_Server->u8_DeviceType = p_Context->u8_DeviceType;
