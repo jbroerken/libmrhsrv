@@ -26,6 +26,7 @@
 #include <string.h>
 
 // External
+#include <sodium.h>
 
 // Project
 #include "../../include/libmrhsrv/libmrhsrv/Communication/MRH_ServerCommunication.h"

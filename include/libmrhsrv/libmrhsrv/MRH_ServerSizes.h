@@ -27,7 +27,6 @@
 // C
 
 // External
-#include <sodium.h>
 
 // Project
 
@@ -37,9 +36,9 @@
 
 #define MRH_SRV_SIZE_ACCOUNT_MAIL 128
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD 32 // Max key length, equals crypto_secretbox_KEYBYTES and crypto_box_SEEDBYTES
-#define MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT crypto_pwhash_SALTBYTES // Salt used for pw hash
+#define MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT 16 // Salt used for pw hash (crypto_pwhash_SALTBYTES)
 
-#define MRH_SRV_SIZE_NONCE_HASH crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES + sizeof(uint32_t) // Hashed nonce bytes
+#define MRH_SRV_SIZE_NONCE_HASH 24 + 16 + sizeof(uint32_t) // Hashed nonce bytes (crypto_secretbox_NONCEBYTES + crypto_secretbox_MACBYTES + 4)
 
 #define MRH_SRV_SIZE_DEVICE_KEY 25
 #define MRH_SRV_SIZE_DEVICE_PASSWORD MRH_SRV_SIZE_ACCOUNT_PASSWORD // Uses same size for sodium
