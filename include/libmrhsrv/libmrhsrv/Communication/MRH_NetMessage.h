@@ -56,7 +56,7 @@ extern "C"
         
         // Availability
         MRH_SRV_C_MSG_HELLO = 1,                    // Client - Signal availability
-        MRH_SRV_S_MSG_PARTNER_CONNECTED = 2,        // Server - Partner client connected
+        MRH_SRV_S_MSG_PARTNER_CLOSED = 2,           // Server - A client closed connection (for other clients, etc.)
         
         // Server Auth
         MRH_SRV_C_MSG_AUTH_REQUEST = 3,             // Client - Request authentication
@@ -64,10 +64,11 @@ extern "C"
         MRH_SRV_C_MSG_AUTH_PROOF = 5,               // Client - Provide proof of valid auth data
         MRH_SRV_S_MSG_AUTH_RESULT = 6,              // Server - Proof check result
         
-        // Device Auth
-        MRH_SRV_C_MSG_PAIR_CHALLENGE = 7,           // Client - Give nonce etc to partner to hash
-        MRH_SRV_C_MSG_PAIR_PROOF,                   // Client - Return the hashed nonce and info
-        MRH_SRV_C_MSG_PAIR_RESULT,                  // Client - Result of pair comparison
+        // Device Pairing
+        MRH_SRV_C_MSG_PAIR_REQUEST = 7,             // Client - Request pairing with platform client
+        MRH_SRV_C_MSG_PAIR_CHALLENGE,               // Client - Give nonce to app client to hash
+        MRH_SRV_C_MSG_PAIR_PROOF,                   // Client - Return the hashed nonce to platform client
+        MRH_SRV_C_MSG_PAIR_RESULT,                  // Client - Result of pairing with platform client
         
         // Channel
         MRH_SRV_C_MSG_CHANNEL_REQUEST,              // Client - Request channel info

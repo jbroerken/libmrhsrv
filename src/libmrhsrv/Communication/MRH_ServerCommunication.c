@@ -49,16 +49,14 @@
 
 int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port)
 {
-    if (p_Server == NULL ||
-        p_Address == NULL || strlen(p_Address) == 0 || strlen(p_Address) > MRH_SRV_SIZE_SERVER_ADDRESS ||
-        i_Port <= 0)
+    if (p_Server == NULL || p_Address == NULL || i_Port <= 0)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return -1;
     }
     
     // Set address and port
-    strncpy(p_Server->p_Address, p_Address, strlen(p_Address));
+    strncpy(p_Server->p_Address, p_Address, MRH_SRV_SIZE_SERVER_ADDRESS);
     p_Server->i_Port = i_Port;
     
     // @NOTE: Callback handles seting the connection inside the context!
@@ -102,9 +100,7 @@ int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const 
 
 int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const char* p_Salt, uint8_t u8_HashType)
 {
-    if (p_Buffer == NULL ||
-        p_Password == NULL || strlen(p_Password) > MRH_SRV_SIZE_ACCOUNT_PASSWORD ||
-        p_Salt == NULL || strlen(p_Salt) > MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT)
+    if (p_Buffer == NULL || p_Password == NULL || p_Salt == NULL)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return -1;
@@ -112,9 +108,9 @@ int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const 
     
     // Copy salt to match expected size
     unsigned char p_FullSalt[crypto_pwhash_SALTBYTES] = { '\0' };
-    memcpy(p_FullSalt, p_Salt, strlen(p_Salt));
+    memcpy(p_FullSalt, p_Salt, crypto_pwhash_SALTBYTES);
     
-    memset(p_Buffer, '\0', MRH_SRV_SIZE_PASSWORD_HASH); /* @NOTE: = SEEDBYTES (32) which is KEYBYTES (32) */
+    memset(p_Buffer, '\0', MRH_SRV_SIZE_ACCOUNT_PASSWORD); /* @NOTE: = SEEDBYTES (32) which is KEYBYTES (32) */
     
     unsigned long long ull_OpsLimit;
     size_t us_MemLimit;
@@ -136,7 +132,7 @@ int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const 
     if (crypto_pwhash(p_Buffer,
                       crypto_box_SEEDBYTES,
                       p_Password,
-                      strlen(p_Password),
+                      crypto_secretbox_KEYBYTES,
                       p_FullSalt,
                       ull_OpsLimit,
                       us_MemLimit,
@@ -208,13 +204,13 @@ static inline size_t MRH_SRV_GetEncryptedSize()
 
 static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageBuffer, const char* p_Password)
 {
-    if (strlen(p_Password) > crypto_secretbox_KEYBYTES)
+    if (p_Password == NULL)
     {
         return -1;
     }
     
     unsigned char p_Key[crypto_secretbox_KEYBYTES] = { '\0' };
-    memcpy(p_Key, p_Password, strlen(p_Password));
+    memcpy(p_Key, p_Password, crypto_secretbox_KEYBYTES);
     
     unsigned char p_Nonce[crypto_secretbox_NONCEBYTES] = { '\0' };
     randombytes_buf(p_Nonce, crypto_secretbox_NONCEBYTES);
@@ -234,13 +230,13 @@ static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageB
 
 static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedBuffer, const char* p_Password)
 {
-    if (strlen(p_Password) > crypto_secretbox_KEYBYTES)
+    if (p_Password == NULL)
     {
         return -1;
     }
     
     unsigned char p_Key[crypto_secretbox_KEYBYTES] = { '\0' };
-    memcpy(p_Key, p_Password, strlen(p_Password));
+    memcpy(p_Key, p_Password, crypto_secretbox_KEYBYTES);
     
     unsigned char p_Nonce[crypto_secretbox_NONCEBYTES] = { '\0' };
     memcpy(p_Nonce, p_EncryptedBuffer, crypto_secretbox_NONCEBYTES);

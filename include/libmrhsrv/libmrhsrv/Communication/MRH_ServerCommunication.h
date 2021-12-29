@@ -47,7 +47,8 @@ extern "C"
      *
      *  \param p_Context The library context to use for connecting.
      *  \param p_Server The server to connect to.
-     *  \param p_Address The server address.
+     *  \param p_Address The server address. The buffer has to be of size
+     *                   MRH_SRV_SIZE_SERVER_ADDRESS.
      *  \param i_Port The server port.
      *
      *  \return 0 on success, -1 on failure.
@@ -56,12 +57,14 @@ extern "C"
     extern int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port);
     
     /**
-     *  Create a password hash with a provided salt. The given buffer has to be
-     *  MRH_SRV_SIZE_PASSWORD_HASH bytes large.
+     *  Create a password hash with a provided salt.
      *
-     *  \param p_Buffer The password hash buffer.
-     *  \param p_Password The account password to hash with.
-     *  \param p_Salt The password hash salt to use.
+     *  \param p_Buffer The password hash buffer. The buffer has to be of size
+     *                  MRH_SRV_SIZE_PASSWORD.
+     *  \param p_Password The account password to hash with. The buffer has to be of size
+     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
+     *  \param p_Salt The password hash salt to use. The buffer has to be of size
+     *                MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT.
      *  \param u8_HashType The type of hash to use for the password.
      *
      *  \return 0 on success, -1 on failure.
@@ -70,12 +73,13 @@ extern "C"
     extern int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const char* p_Salt, uint8_t u8_HashType);
     
     /**
-     *  Create a nonce hash with a given password password. The given buffer has to be
-     *  MRH_SRV_SIZE_NONCE_HASH bytes large.
+     *  Create a nonce hash with a given password password.
      *
-     *  \param p_Buffer The nonce hash buffer.
+     *  \param p_Buffer The nonce hash buffer. The buffer has to be of size
+     *                  MRH_SRV_SIZE_NONCE_HASH.
      *  \param u32_Nonce The nonce to hash.
-     *  \param p_Password The account password to hash with.
+     *  \param p_Password The account password to hash with. The buffer has to be of size
+     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 on success, -1 on failure.
      */
@@ -118,19 +122,24 @@ extern "C"
      *
      *  \param p_Server The server to check.
      *  \param p_Buffer The buffer to write the connection to with the server buffer size.
+     *                  The buffer has to be of size MRH_SRV_SIZE_MESSAGE_BUFFER.
      *
-     *  \return The recieved net message type on success, MRH_SRV_CS_MSG_UNK if nothing was recieved.
+     *  \return The recieved net message type on success, MRH_SRV_CS_MSG_UNK if nothing
+     *          was recieved.
      */
     
     extern MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer);
     
     /**
-     *  Set the data of a recieved message with a message buffer. The given buffer has to match the
-     *  recieve buffer size.
+     *  Set the data of a recieved message with a message buffer. The given buffer has to
+     *  match the recieve buffer size.
      *
      *  \param p_Message The message to set.
-     *  \param p_Buffer The buffer containing the message data.
-     *  \param p_Password The password to use for message data decryption. NULL skips decryption.
+     *  \param p_Buffer The buffer containing the message data. The buffer has to be of size
+     *                  MRH_SRV_SIZE_MESSAGE_BUFFER.
+     *  \param p_Password The password to use for message data decryption. NULL skips
+     *                    decryption. The buffer has to be of size
+     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 on success, -1 on failure.
      */
@@ -147,7 +156,9 @@ extern "C"
      *  \param p_Server The server to send to.
      *  \param e_Message The type of net message to send.
      *  \param p_Data The net message data to send.
-     *  \param p_Password The password to use for message data encryption. NULL skips encryption.
+     *  \param p_Password The password to use for message data encryption. NULL skips
+     *                    encryption. The buffer has to be of size
+     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 if the message was sent, -1 on failure.
      */
