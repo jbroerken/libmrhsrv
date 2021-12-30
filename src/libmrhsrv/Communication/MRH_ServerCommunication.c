@@ -274,10 +274,10 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
             continue;
         }
         
-        if (p_Password != NULL)
+        // Needs to be decrypted?
+        if (p_MsQuic->p_Recieved[i].us_SizeCur == MRH_SRV_GetEncryptedSize())
         {
-            if (p_MsQuic->p_Recieved[i].us_SizeCur != MRH_SRV_GetEncryptedSize() ||
-                MRH_SRV_Decrypt(&(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Buffer, p_Password) < 0)
+            if (p_Password == NULL || MRH_SRV_Decrypt(&(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Buffer, p_Password) < 0)
             {
                 MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
                 return -1;
@@ -417,6 +417,8 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     // Now, create or expand the buffer as needed
     uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER];
     
+    int i_Encrypt; // Define if message uses end to end encryption
+    
     // Grab data from the message to send
     switch (e_Message)
     {
@@ -428,51 +430,63 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         case MRH_SRV_C_MSG_HELLO:
             memset(p_MessageBuffer, '\0', MRH_SRV_SIZE_MESSAGE_BUFFER);
             p_MessageBuffer[0] = MRH_SRV_C_MSG_HELLO;
+            i_Encrypt = -1; // This message is not end to end encrypted
             break;
             
         // Server Auth
         case MRH_SRV_C_MSG_AUTH_REQUEST:
             FROM_MRH_SRV_C_MSG_AUTH_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_AUTH_REQUEST_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
         case MRH_SRV_C_MSG_AUTH_PROOF:
             FROM_MRH_SRV_C_MSG_AUTH_PROOF(p_MessageBuffer, (const MRH_SRV_C_MSG_AUTH_PROOF_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
             
         // Device Auth
         case MRH_SRV_C_MSG_PAIR_REQUEST:
             FROM_MRH_SRV_C_MSG_PAIR_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
         case MRH_SRV_C_MSG_PAIR_CHALLENGE:
             FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
         case MRH_SRV_C_MSG_PAIR_PROOF:
             FROM_MRH_SRV_C_MSG_PAIR_PROOF(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_PROOF_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
         case MRH_SRV_C_MSG_PAIR_RESULT:
             FROM_MRH_SRV_C_MSG_PAIR_RESULT(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_RESULT_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
             
         // Channel
         case MRH_SRV_C_MSG_CHANNEL_REQUEST:
             FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA*)p_Data);
+            i_Encrypt = 0;
             break;
             
         // Text
         case MRH_SRV_C_MSG_TEXT:
             FROM_MRH_SRV_C_MSG_TEXT(p_MessageBuffer, (const MRH_SRV_C_MSG_TEXT_DATA*)p_Data);
+            i_Encrypt = 0;
             break;
             
         // Location
         case MRH_SRV_C_MSG_LOCATION:
             FROM_MRH_SRV_C_MSG_LOCATION(p_MessageBuffer, (const MRH_SRV_C_MSG_LOCATION_DATA*)p_Data);
+            i_Encrypt = 0;
             break;
             
         // Custom
         case MRH_SRV_C_MSG_CUSTOM:
             FROM_MRH_SRV_C_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_C_MSG_CUSTOM_DATA*)p_Data);
+            i_Encrypt = 0;
             break;
         case MRH_SRV_CS_MSG_CUSTOM:
             FROM_MRH_SRV_CS_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_CS_MSG_CUSTOM_DATA*)p_Data);
+            i_Encrypt = -1;
             break;
             
         /**
@@ -485,10 +499,17 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
             return -1;
     }
     
+    // Do we have a password for encryption?
+    if (i_Encrypt == 0 && p_Password == NULL)
+    {
+        MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
+        return -1;
+    }
+    
     // Now, create or expand the buffer as needed
     size_t us_BufferSize = sizeof(QUIC_BUFFER);
     
-    if (p_Password != NULL)
+    if (i_Encrypt == 0)
     {
         us_BufferSize += MRH_SRV_GetEncryptedSize();
     }
@@ -510,7 +531,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     }
     
     // And now write the message contents
-    if (p_Password != NULL)
+    if (i_Encrypt == 0)
     {
         if (MRH_SRV_Encrypt(&(p_Message->p_Buffer[sizeof(QUIC_BUFFER)]), p_MessageBuffer, p_Password) < 0)
         {
