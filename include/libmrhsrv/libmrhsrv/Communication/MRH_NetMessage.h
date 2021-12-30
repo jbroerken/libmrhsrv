@@ -52,40 +52,40 @@ extern "C"
          */
         
         // Unknown
-        MRH_SRV_CS_MSG_UNK = 0,                     // Unknown data
+        MRH_SRV_CS_MSG_UNK = 0,                     // Both - Unknown data [Plain]
         
         // Availability
-        MRH_SRV_C_MSG_HELLO = 1,                    // Client - Signal availability
-        MRH_SRV_S_MSG_PARTNER_CLOSED = 2,           // Server - A client closed connection (for other clients, etc.)
+        MRH_SRV_C_MSG_HELLO = 1,                    // Client - Signal availability [Plain]
+        MRH_SRV_S_MSG_PARTNER_CLOSED = 2,           // Server - A client closed connection (for other clients, etc.) [Plain]
         
         // Server Auth
-        MRH_SRV_C_MSG_AUTH_REQUEST = 3,             // Client - Request authentication
-        MRH_SRV_S_MSG_AUTH_CHALLENGE = 4,           // Server - Challenge client to provide auth data
-        MRH_SRV_C_MSG_AUTH_PROOF = 5,               // Client - Provide proof of valid auth data
-        MRH_SRV_S_MSG_AUTH_RESULT = 6,              // Server - Proof check result
+        MRH_SRV_C_MSG_AUTH_REQUEST = 3,             // Client - Request authentication [Plain]
+        MRH_SRV_S_MSG_AUTH_CHALLENGE = 4,           // Server - Challenge client to provide auth data [Plain]
+        MRH_SRV_C_MSG_AUTH_PROOF = 5,               // Client - Provide proof of valid auth data [Plain]
+        MRH_SRV_S_MSG_AUTH_RESULT = 6,              // Server - Proof check result [Plain]
         
         // Device Pairing
-        MRH_SRV_C_MSG_PAIR_REQUEST = 7,             // Client - Request pairing with platform client
-        MRH_SRV_C_MSG_PAIR_CHALLENGE,               // Client - Give nonce to app client to hash
-        MRH_SRV_C_MSG_PAIR_PROOF,                   // Client - Return the hashed nonce to platform client
-        MRH_SRV_C_MSG_PAIR_RESULT,                  // Client - Result of pairing with platform client
+        MRH_SRV_C_MSG_PAIR_REQUEST = 7,             // Client - Request pairing with platform client [Plain]
+        MRH_SRV_C_MSG_PAIR_CHALLENGE,               // Client - Give nonce to app client to hash [Plain]
+        MRH_SRV_C_MSG_PAIR_PROOF,                   // Client - Return the hashed nonce to platform client [Plain]
+        MRH_SRV_C_MSG_PAIR_RESULT,                  // Client - Result of pairing with platform client [Plain]
         
         // Channel
-        MRH_SRV_C_MSG_CHANNEL_REQUEST,              // Client - Request channel info
-        MRH_SRV_S_MSG_CHANNEL_RESPONSE,             // Server - Provide channel info
+        MRH_SRV_C_MSG_CHANNEL_REQUEST,              // Client - Request channel info [Plain]
+        MRH_SRV_S_MSG_CHANNEL_RESPONSE,             // Server - Provide channel info [Plain]
         
         // Text
-        MRH_SRV_C_MSG_TEXT,                         // Client - Send text string
+        MRH_SRV_C_MSG_TEXT,                         // Client - Send text string [Encrypted]
         
         // Location
-        MRH_SRV_C_MSG_LOCATION,                     // Client - Send location data
+        MRH_SRV_C_MSG_LOCATION,                     // Client - Send location data [Encrypted]
         
         // Custom
-        MRH_SRV_C_MSG_CUSTOM,                       // Client - Custom message
-        MRH_SRV_S_MSG_CUSTOM,                       // Server - Custom message
+        MRH_SRV_C_MSG_CUSTOM,                       // Client - Custom message [Encrypted]
+        MRH_SRV_CS_MSG_CUSTOM,                      // Both - Custom message [Plain]
         
         // Bounds
-        MRH_SRV_NET_MESSAGE_MAX = MRH_SRV_S_MSG_CUSTOM,
+        MRH_SRV_NET_MESSAGE_MAX = MRH_SRV_CS_MSG_CUSTOM,
         
         MRH_SRV_NET_MESSAGE_COUNT = MRH_SRV_NET_MESSAGE_MAX + 1
         
@@ -257,11 +257,11 @@ extern "C"
         
     }MRH_SRV_C_MSG_CUSTOM_DATA;
     
-    typedef struct MRH_SRV_S_MSG_CUSTOM_DATA_t
+    typedef struct MRH_SRV_CS_MSG_CUSTOM_DATA_t
     {
         uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the server sent
         
-    }MRH_SRV_S_MSG_CUSTOM_DATA;
+    }MRH_SRV_CS_MSG_CUSTOM_DATA;
     
 #ifdef __cplusplus
 }

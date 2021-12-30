@@ -109,26 +109,21 @@ extern "C"
     //*************************************************************************************
 
     /**
-     *  Get the size required for the recieve buffer.
-     *
-     *  \return The size required for the recieve buffer.
-     */
-    
-    extern size_t MRH_SRV_RecieveBufferSize(void);
-    
-    /**
      *  Recieve a message from the connected channels. The given buffer has to match the
      *  recieve buffer size.
      *
      *  \param p_Server The server to check.
-     *  \param p_Buffer The buffer to write the connection to with the server buffer size.
-     *                  The buffer has to be of size MRH_SRV_SIZE_MESSAGE_BUFFER.
+     *  \param p_Buffer The buffer to write the message. The buffer has to be of size
+     *                  MRH_SRV_SIZE_MESSAGE_BUFFER.
+     *  \param p_Password The password to use for message data decryption. NULL skips
+     *                    decryption. The buffer has to be of size
+     *                    MRH_SRV_SIZE_DEVICE_PASSWORD.
      *
      *  \return The recieved net message type on success, MRH_SRV_CS_MSG_UNK if nothing
      *          was recieved.
      */
     
-    extern MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer);
+    extern MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer, const char* p_Password);
     
     /**
      *  Set the data of a recieved message with a message buffer. The given buffer has to
@@ -137,14 +132,11 @@ extern "C"
      *  \param p_Message The message to set.
      *  \param p_Buffer The buffer containing the message data. The buffer has to be of size
      *                  MRH_SRV_SIZE_MESSAGE_BUFFER.
-     *  \param p_Password The password to use for message data decryption. NULL skips
-     *                    decryption. The buffer has to be of size
-     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* p_Password);
+    int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer);
     
     //*************************************************************************************
     // Send
@@ -158,7 +150,7 @@ extern "C"
      *  \param p_Data The net message data to send.
      *  \param p_Password The password to use for message data encryption. NULL skips
      *                    encryption. The buffer has to be of size
-     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
+     *                    MRH_SRV_SIZE_DEVICE_PASSWORD.
      *
      *  \return 0 if the message was sent, -1 on failure.
      */

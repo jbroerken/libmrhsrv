@@ -393,7 +393,17 @@ void TO_MRH_SRV_C_MSG_CUSTOM(MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage, const uint
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
 
-void TO_MRH_SRV_S_MSG_CUSTOM(MRH_SRV_S_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void FROM_MRH_SRV_CS_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage)
+{
+    p_Buffer[0] = MRH_SRV_CS_MSG_CUSTOM;
+    ++p_Buffer;
+    
+    memcpy(p_Buffer,
+           &(p_NetMessage->p_Buffer[0]),
+           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
+}
+
+void TO_MRH_SRV_CS_MSG_CUSTOM(MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     

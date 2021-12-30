@@ -257,12 +257,7 @@ static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedB
 // Recieve
 //*************************************************************************************
 
-size_t MRH_SRV_RecieveBufferSize(void)
-{
-    return MRH_SRV_GetEncryptedSize();
-}
-
-MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer)
+MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer, const char* p_Password)
 {
     if (p_Server == NULL || p_Buffer == NULL)
     {
@@ -279,9 +274,22 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
             continue;
         }
         
-        memcpy(p_Buffer,
-               &(p_MsQuic->p_Recieved[i].p_Buffer[0]),
-               p_MsQuic->p_Recieved[i].us_SizeCur);
+        if (p_Password != NULL)
+        {
+            if (p_MsQuic->p_Recieved[i].us_SizeCur != MRH_SRV_GetEncryptedSize() ||
+                MRH_SRV_Decrypt(&(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Buffer, p_Password) < 0)
+            {
+                MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
+                return -1;
+            }
+        }
+        else
+        {
+            // No encprytion, simply copy
+            memcpy(p_Buffer,
+                   &(p_MsQuic->p_Recieved[i].p_Buffer[0]),
+                   p_MsQuic->p_Recieved[i].us_SizeCur);
+        }
         
         // Set as read
         p_MsQuic->p_Recieved[i].i_State = MRH_MSQ_MESSAGE_FREE;
@@ -294,7 +302,7 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
     return MRH_SRV_CS_MSG_UNK;
 }
 
-int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* p_Password)
+int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
 {
     if (p_Message == NULL || p_Buffer == NULL)
     {
@@ -302,28 +310,7 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* 
         return -1;
     }
     
-    uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER] = { '\0' };
-    
-    if (p_Password != NULL)
-    {
-        if (MRH_SRV_Decrypt(p_MessageBuffer, p_Buffer, p_Password) < 0)
-        {
-            MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
-            return -1;
-        }
-    }
-    else
-    {
-        // No encprytion, copy
-        // @TODO: Do this better, this copy is useless
-        memcpy(p_MessageBuffer,
-               p_Buffer,
-               MRH_SRV_SIZE_MESSAGE_BUFFER);
-    }
-    
-    MRH_Srv_NetMessage e_Message = p_MessageBuffer[0];
-    
-    switch (e_Message)
+    switch (p_Buffer[0]) // 0 = Net Message ID
     {
         /**
          *  Net Message Version 1
@@ -331,47 +318,47 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* 
         
         // Server Auth
         case MRH_SRV_S_MSG_AUTH_CHALLENGE:
-            TO_MRH_SRV_S_MSG_AUTH_CHALLENGE((MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_S_MSG_AUTH_CHALLENGE((MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA*)p_Message, p_Buffer);
             break;
         case MRH_SRV_S_MSG_AUTH_RESULT:
-            TO_MRH_SRV_S_MSG_AUTH_RESULT((MRH_SRV_S_MSG_AUTH_RESULT_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_S_MSG_AUTH_RESULT((MRH_SRV_S_MSG_AUTH_RESULT_DATA*)p_Message, p_Buffer);
             break;
             
         // Device Auth
         case MRH_SRV_C_MSG_PAIR_REQUEST:
-            TO_MRH_SRV_C_MSG_PAIR_REQUEST((MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_PAIR_REQUEST((MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Message, p_Buffer);
             break;
         case MRH_SRV_C_MSG_PAIR_CHALLENGE:
-            TO_MRH_SRV_C_MSG_PAIR_CHALLENGE((MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_PAIR_CHALLENGE((MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Message, p_Buffer);
             break;
         case MRH_SRV_C_MSG_PAIR_PROOF:
-            TO_MRH_SRV_C_MSG_PAIR_PROOF((MRH_SRV_C_MSG_PAIR_PROOF_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_PAIR_PROOF((MRH_SRV_C_MSG_PAIR_PROOF_DATA*)p_Message, p_Buffer);
             break;
         case MRH_SRV_C_MSG_PAIR_RESULT:
-            TO_MRH_SRV_C_MSG_PAIR_RESULT((MRH_SRV_C_MSG_PAIR_RESULT_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_PAIR_RESULT((MRH_SRV_C_MSG_PAIR_RESULT_DATA*)p_Message, p_Buffer);
             break;
             
         // Channel
         case MRH_SRV_S_MSG_CHANNEL_RESPONSE:
-            TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE((MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE((MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA*)p_Message, p_Buffer);
             break;
             
         // Text
         case MRH_SRV_C_MSG_TEXT:
-            TO_MRH_SRV_C_MSG_TEXT((MRH_SRV_C_MSG_TEXT_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_TEXT((MRH_SRV_C_MSG_TEXT_DATA*)p_Message, p_Buffer);
             break;
             
         // Location
         case MRH_SRV_C_MSG_LOCATION:
-            TO_MRH_SRV_C_MSG_LOCATION((MRH_SRV_C_MSG_LOCATION_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_LOCATION((MRH_SRV_C_MSG_LOCATION_DATA*)p_Message, p_Buffer);
             break;
             
         // Custom
         case MRH_SRV_C_MSG_CUSTOM:
-            TO_MRH_SRV_C_MSG_CUSTOM((MRH_SRV_C_MSG_CUSTOM_DATA*)p_Message, p_MessageBuffer);
+            TO_MRH_SRV_C_MSG_CUSTOM((MRH_SRV_C_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
             break;
-        case MRH_SRV_S_MSG_CUSTOM:
-            TO_MRH_SRV_S_MSG_CUSTOM((MRH_SRV_S_MSG_CUSTOM_DATA*)p_Message, p_MessageBuffer);
+        case MRH_SRV_CS_MSG_CUSTOM:
+            TO_MRH_SRV_CS_MSG_CUSTOM((MRH_SRV_CS_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
             break;
             
         /**
@@ -379,7 +366,8 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer, const char* 
          */
             
         default:
-            break;
+            MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
+            return -1;
     }
     
     return 0;
@@ -482,6 +470,9 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         // Custom
         case MRH_SRV_C_MSG_CUSTOM:
             FROM_MRH_SRV_C_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_C_MSG_CUSTOM_DATA*)p_Data);
+            break;
+        case MRH_SRV_CS_MSG_CUSTOM:
+            FROM_MRH_SRV_CS_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_CS_MSG_CUSTOM_DATA*)p_Data);
             break;
             
         /**

@@ -237,13 +237,22 @@ extern void FROM_MRH_SRV_C_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CUS
 extern void TO_MRH_SRV_C_MSG_CUSTOM(MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 /**
- *  Set the data for a given MRH_SRV_S_MSG_CUSTOM net message with a given buffer.
+ *  Set the message buffer for a given MRH_SRV_CS_MSG_CUSTOM net message.
+ *
+ *  \param p_Buffer The buffer to set.
+ *  \param p_NetMessage The net message to use.
+ */
+
+extern void FROM_MRH_SRV_CS_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage);
+
+/**
+ *  Set the data for a given MRH_SRV_CS_MSG_CUSTOM net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_S_MSG_CUSTOM(MRH_SRV_S_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
+extern void TO_MRH_SRV_CS_MSG_CUSTOM(MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 
 #endif /* MRH_NetMessageV1_h */
