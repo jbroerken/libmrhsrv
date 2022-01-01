@@ -115,6 +115,7 @@ extern "C"
         MRH_SRV_NET_MESSAGE_ERR_SA_VERSION = 4,                 // Wrong OpCode Version
         MRH_SRV_NET_MESSAGE_ERR_SA_UNK_ACTOR = 5,               // Unknown actor id
         MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 6,                 // Account data given was wrong
+        MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 7,       // Connection already exists
         MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE,                 // Temporary downtime
         
         // Channel
