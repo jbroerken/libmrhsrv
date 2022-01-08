@@ -150,6 +150,7 @@ extern "C"
     typedef struct MRH_SRV_C_MSG_AUTH_REQUEST_DATA_t
     {
         char p_Mail[MRH_SRV_SIZE_ACCOUNT_MAIL]; // The account mail
+        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Device valid for server
         uint8_t u8_Actor;  // Which type of client (platform or app)
         uint8_t u8_Version; // NetMessage version in use
         
@@ -166,7 +167,6 @@ extern "C"
     typedef struct MRH_SRV_C_MSG_AUTH_PROOF_DATA_t
     {
         uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
-        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Device valid for server
         
     }MRH_SRV_C_MSG_AUTH_PROOF_DATA;
     

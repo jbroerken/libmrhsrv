@@ -115,9 +115,7 @@ set_target_properties(libmrhsrv_Static
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
-include_directories ("/usr/local/msquic/include")
-
-find_library(libmsquic NAMES msquic HINTS "/usr/local/msquic/lib" REQUIRED)
+find_library(libmsquic NAMES msquic REQUIRED)
 find_library(libsodium NAMES sodium REQUIRED)
 
 target_link_libraries(libmrhsrv_Static PUBLIC msquic)

@@ -60,8 +60,12 @@ void FROM_MRH_SRV_C_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH
            &(p_NetMessage->p_Mail[0]),
            MRH_SRV_SIZE_ACCOUNT_MAIL);
     
-    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL] = p_NetMessage->u8_Actor;
-    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + 1] = p_NetMessage->u8_Version;
+    memcpy(&(p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL]),
+           &(p_NetMessage->p_DeviceKey[0]),
+           MRH_SRV_SIZE_DEVICE_KEY);
+    
+    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY] = p_NetMessage->u8_Actor;
+    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY + 1] = p_NetMessage->u8_Version;
 }
 
 void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -95,9 +99,6 @@ void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_P
     memcpy(p_Buffer,
            &(p_NetMessage->p_NonceHash[0]),
            MRH_SRV_SIZE_NONCE_HASH);
-    memcpy(&(p_Buffer[MRH_SRV_SIZE_NONCE_HASH]),
-           &(p_NetMessage->p_DeviceKey[0]),
-           MRH_SRV_SIZE_DEVICE_KEY);
 }
 
 void TO_MRH_SRV_S_MSG_AUTH_RESULT(MRH_SRV_S_MSG_AUTH_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer)
