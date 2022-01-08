@@ -83,9 +83,9 @@ int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const 
     }
     
     // Wait for the connection to be set
-    time_t u32_EndTime = time(NULL) + (p_Server->i_TimeoutMS / 1000);
+    time_t u32_EndTimeS = time(NULL) + (p_Server->i_TimeoutMS / 1000);
     
-    while (time(NULL) < u32_EndTime)
+    while (time(NULL) < u32_EndTimeS)
     {
         if (p_MsQuic->p_Connection != NULL)
         {
@@ -145,7 +145,7 @@ int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const 
     return 0;
 }
 
-int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p_Password)
+int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password)
 {
     unsigned char p_Nonce[crypto_secretbox_NONCEBYTES] = { '\0' };
     randombytes_buf(p_Nonce, crypto_secretbox_NONCEBYTES);
@@ -155,7 +155,7 @@ int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p
                               (const unsigned char*)&u32_Nonce,
                               sizeof(u32_Nonce),
                               p_Nonce,
-                              (const unsigned char*)p_Password) != 0) /* @NOTE: KEYBYTES == SEEDBYTES (32) */
+                              p_Password) != 0) /* @NOTE: KEYBYTES == SEEDBYTES (32) */
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
         return -1;
@@ -464,7 +464,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         // Channel
         case MRH_SRV_C_MSG_CHANNEL_REQUEST:
             FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA*)p_Data);
-            i_Encrypt = 0;
+            i_Encrypt = -1;
             break;
             
         // Text

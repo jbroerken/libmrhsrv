@@ -78,13 +78,13 @@ extern "C"
      *  \param p_Buffer The nonce hash buffer. The buffer has to be of size
      *                  MRH_SRV_SIZE_NONCE_HASH.
      *  \param u32_Nonce The nonce to hash.
-     *  \param p_Password The account password to hash with. The buffer has to be of size
-     *                    MRH_SRV_SIZE_ACCOUNT_PASSWORD.
+     *  \param p_Password The password to hash with. The buffer has to
+     *                    be of size MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    extern int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const char* p_Password);
+    extern int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password);
     
     /**
      *  Disconnect from a server.
