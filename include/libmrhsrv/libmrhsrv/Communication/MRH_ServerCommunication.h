@@ -50,11 +50,13 @@ extern "C"
      *  \param p_Address The server address. The buffer has to be of size
      *                   MRH_SRV_SIZE_SERVER_ADDRESS.
      *  \param i_Port The server port.
+     *  \param i_WaitS Wait for the specified timeout and check if the connection
+     *                 is established. -1 skips checking for a successfull connection.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    extern int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port);
+    extern int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port, int i_WaitS);
     
     /**
      *  Create a password hash with a provided salt.

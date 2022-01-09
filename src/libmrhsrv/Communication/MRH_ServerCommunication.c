@@ -47,7 +47,7 @@
 // Connection
 //*************************************************************************************
 
-int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port)
+int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const char* p_Address, int i_Port, int i_WaitS)
 {
     if (p_Server == NULL || p_Address == NULL || i_Port <= 0)
     {
@@ -82,8 +82,14 @@ int MRH_SRV_Connect(MRH_Srv_Context* p_Context, MRH_Srv_Server* p_Server, const 
         return -1;
     }
     
+    // Should we wait here for connection success?
+    if (i_WaitS < 0)
+    {
+        return 0;
+    }
+    
     // Wait for the connection to be set
-    time_t u32_EndTimeS = time(NULL) + (p_Server->i_TimeoutMS / 1000);
+    time_t u32_EndTimeS = time(NULL) + (i_WaitS);
     
     while (time(NULL) < u32_EndTimeS)
     {
@@ -426,13 +432,6 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
          *  Net Message Version 1
          */
         
-        // Availability
-        case MRH_SRV_C_MSG_HELLO:
-            memset(p_MessageBuffer, '\0', MRH_SRV_SIZE_MESSAGE_BUFFER);
-            p_MessageBuffer[0] = MRH_SRV_C_MSG_HELLO;
-            i_Encrypt = -1; // This message is not end to end encrypted
-            break;
-            
         // Server Auth
         case MRH_SRV_C_MSG_AUTH_REQUEST:
             FROM_MRH_SRV_C_MSG_AUTH_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_AUTH_REQUEST_DATA*)p_Data);
