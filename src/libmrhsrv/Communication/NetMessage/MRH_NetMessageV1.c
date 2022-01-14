@@ -118,7 +118,7 @@ void FROM_MRH_SRV_C_MSG_PAIR_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR
            '\0',
            MRH_SRV_SIZE_MESSAGE_BUFFER);
     
-    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_CHALLENGE;
+    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_REQUEST;
     p_Buffer[1] = p_NetMessage->u8_Actor;
 }
 
