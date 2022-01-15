@@ -249,7 +249,7 @@ MRH_Srv_Server* MRH_SRV_DestroyServer(MRH_Srv_Context* p_Context, MRH_Srv_Server
     }
     
     // Disconnect first
-    MRH_SRV_Disconnect(p_Server);
+    MRH_SRV_Disconnect(p_Server, -1);
     
     // Clean up
     MRH_MsQuicDestroyConnection(p_Server->p_MsQuic);

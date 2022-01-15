@@ -75,26 +75,42 @@ extern "C"
     extern int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const char* p_Salt, uint8_t u8_HashType);
     
     /**
-     *  Create a nonce hash with a given password password.
+     *  Encrypt a nonce with a given password password.
      *
      *  \param p_Buffer The nonce hash buffer. The buffer has to be of size
      *                  MRH_SRV_SIZE_NONCE_HASH.
      *  \param u32_Nonce The nonce to hash.
-     *  \param p_Password The password to hash with. The buffer has to
+     *  \param p_Password The password to encrypt with. The buffer has to
      *                    be of size MRH_SRV_SIZE_ACCOUNT_PASSWORD.
      *
      *  \return 0 on success, -1 on failure.
      */
     
-    extern int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password);
+    extern int MRH_SRV_EncryptNonce(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password);
+    
+    /**
+     *  Decrypt a encrypted nonce with a given password.
+     *
+     *  \param p_Nonce The nonce result.
+     *  \param p_EncryptedNonce The encrypted nonce buffer. The buffer has to
+     *                          be of size MRH_SRV_SIZE_NONCE_HASH.
+     *  \param p_Password The password to encrypt with. The buffer has to
+     *                    be of size MRH_SRV_SIZE_ACCOUNT_PASSWORD.
+     *
+     *  \return 0 on success, -1 on failure.
+     */
+    
+    extern int MRH_SRV_DecryptNonce(uint32_t* p_Nonce, const uint8_t* p_EncryptedNonce, const uint8_t* p_Password);
     
     /**
      *  Disconnect from a server.
      *
      *  \param p_Server The server to disconnect from.
+     *  \param i_WaitS Wait for the specified timeout and check if the connection is
+     *                 disconnected. -1 skips checking for a successfull disconnect.
      */
     
-    extern void MRH_SRV_Disconnect(MRH_Srv_Server* p_Server);
+    extern void MRH_SRV_Disconnect(MRH_Srv_Server* p_Server, int i_WaitS);
     
     /**
      *  Check if the server is connected.

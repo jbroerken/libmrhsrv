@@ -126,7 +126,7 @@ int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const 
     {
         case 0:
             ull_OpsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE;
-            us_MemLimit = crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE;
+            us_MemLimit = 128 * 1024 * 1024;//crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE;
             i_Alg = crypto_pwhash_ALG_ARGON2ID13;
             break;
             
@@ -151,8 +151,14 @@ int MRH_SRV_CreatePasswordHash(uint8_t* p_Buffer, const char* p_Password, const 
     return 0;
 }
 
-int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password)
+int MRH_SRV_EncryptNonce(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t* p_Password)
 {
+    if (p_Buffer == NULL || p_Password == NULL)
+    {
+        MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
+        return -1;
+    }
+    
     unsigned char p_Nonce[crypto_secretbox_NONCEBYTES] = { '\0' };
     randombytes_buf(p_Nonce, crypto_secretbox_NONCEBYTES);
     memcpy(p_Buffer, p_Nonce, crypto_secretbox_NONCEBYTES);
@@ -170,19 +176,60 @@ int MRH_SRV_CreateNonceHash(uint8_t* p_Buffer, uint32_t u32_Nonce, const uint8_t
     return 0;
 }
 
-void MRH_SRV_Disconnect(MRH_Srv_Server* p_Server)
+int MRH_SRV_DecryptNonce(uint32_t* p_Nonce, const uint8_t* p_EncryptedNonce, const uint8_t* p_Password)
 {
-    if (p_Server == NULL)
+    if (p_Nonce == NULL || p_EncryptedNonce == NULL || p_Password == NULL)
+    {
+        MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
+        return -1;
+    }
+    
+    // Grab nonce from nonce encryption first first
+    unsigned char p_FullNonce[crypto_secretbox_NONCEBYTES] = { '\0' };
+    memcpy(p_FullNonce, p_EncryptedNonce, crypto_secretbox_NONCEBYTES);
+    
+    if (crypto_secretbox_open_easy((unsigned char*)p_Nonce,
+                                   (const unsigned char*)&(p_EncryptedNonce[crypto_secretbox_NONCEBYTES]),
+                                   crypto_secretbox_MACBYTES + sizeof(uint32_t),
+                                   (const unsigned char*)p_FullNonce,
+                                   (const unsigned char*)p_Password) != 0)
+    {
+        MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
+        return -1;
+    }
+    
+    return 0;
+}
+
+void MRH_SRV_Disconnect(MRH_Srv_Server* p_Server, int i_WaitS)
+{
+    if (p_Server == NULL || p_Server->p_MsQuic->p_Connection == NULL)
     {
         return;
     }
     
-    if (p_Server->p_MsQuic->p_Connection != NULL)
+    // Perform connection shutdown
+    p_Server->p_MsQuic->p_MsQuicAPI->ConnectionShutdown(p_Server->p_MsQuic->p_Connection,
+                                                        QUIC_CONNECTION_SHUTDOWN_FLAG_NONE,
+                                                        0);
+    
+    // Should we wait here for a disconnect?
+    if (i_WaitS < 0)
     {
-        p_Server->p_MsQuic->p_MsQuicAPI->ConnectionShutdown(p_Server->p_MsQuic->p_Connection,
-                                                            QUIC_CONNECTION_SHUTDOWN_FLAG_NONE,
-                                                            0);
-        while (p_Server->p_MsQuic->p_Connection != NULL);
+        return;
+    }
+    
+    // Wait for the connection to be disconnected
+    time_t u32_EndTimeS = time(NULL) + (i_WaitS);
+    
+    while (time(NULL) < u32_EndTimeS)
+    {
+        if (p_Server->p_MsQuic->p_Connection == NULL)
+        {
+            return;
+        }
+        
+        sleep(1);
     }
 }
 
@@ -283,10 +330,9 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
         // Needs to be decrypted?
         if (p_MsQuic->p_Recieved[i].us_SizeCur == MRH_SRV_GetEncryptedSize())
         {
-            if (p_Password == NULL || MRH_SRV_Decrypt(&(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Buffer, p_Password) < 0)
+            if (p_Password == NULL || MRH_SRV_Decrypt(p_Buffer, &(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Password) < 0)
             {
                 MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
-                return -1;
             }
         }
         else
@@ -551,7 +597,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     // Setup buffer for quic usage
     QUIC_BUFFER* p_QuicBuffer = (QUIC_BUFFER*)(p_Message->p_Buffer);
     p_QuicBuffer->Buffer = &(p_Message->p_Buffer[sizeof(QUIC_BUFFER)]);
-    p_QuicBuffer->Length = MRH_SRV_SIZE_MESSAGE_BUFFER;
+    p_QuicBuffer->Length = us_BufferSize - sizeof(QUIC_BUFFER); // Wanted is the payload size
     
     // Create a stream to send the message on
     HQUIC p_Stream;
