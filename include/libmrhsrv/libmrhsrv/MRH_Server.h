@@ -86,7 +86,6 @@ extern "C"
      *  \param p_Context The context to use.
      *  \param p_Channel The channel name of the server. The buffer has to be of size
      *                   MRH_SRV_SIZE_SERVER_CHANNEL.
-     *  \param i_MessageSize The amount of messages for read and write stored.
      *
      *  \return The new server object on success, NULL on failure.
      */
