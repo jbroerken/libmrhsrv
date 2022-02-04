@@ -56,10 +56,9 @@ extern "C"
         MRH_SRV_CLIENT_APP = 0,
         MRH_SRV_CLIENT_PLATFORM = 1,
         
-        MRH_SRV_SERVER_CONNECTION = 2,
-        MRH_SRV_SERVER_COMMUNICATION = 3,
+        MRH_SRV_SERVER = 2,
         
-        MRH_SRV_ACTOR_MAX = MRH_SRV_SERVER_COMMUNICATION,
+        MRH_SRV_ACTOR_MAX = MRH_SRV_SERVER,
         
         MRH_SRV_ACTOR_COUNT = MRH_SRV_ACTOR_MAX + 1
         

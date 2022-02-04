@@ -84,13 +84,11 @@ extern "C"
      *  Create a new server object.
      *
      *  \param p_Context The context to use.
-     *  \param p_Channel The channel name of the server. The buffer has to be of size
-     *                   MRH_SRV_SIZE_SERVER_CHANNEL.
      *
      *  \return The new server object on success, NULL on failure.
      */
     
-    extern MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_Channel);
+    extern MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context);
     
     /**
      *  Destroy a server object. The server will disconnect before destruction.

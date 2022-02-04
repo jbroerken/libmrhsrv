@@ -48,8 +48,7 @@
 
 MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int i_TimeoutMS)
 {
-    if (e_Client == MRH_SRV_SERVER_CONNECTION ||
-        e_Client == MRH_SRV_SERVER_COMMUNICATION)
+    if (e_Client != MRH_SRV_CLIENT_APP && e_Client != MRH_SRV_CLIENT_PLATFORM)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return NULL;
@@ -203,11 +202,9 @@ MRH_Srv_Context* MRH_SRV_Destroy(MRH_Srv_Context* p_Context)
 // Server
 //*************************************************************************************
 
-MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_Channel)
+MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context)
 {
-    if (p_Context == NULL ||
-        p_Channel == NULL || strnlen(p_Channel, MRH_SRV_SIZE_SERVER_CHANNEL) == 0 ||
-        p_Context->i_ServerCur == p_Context->i_ServerMax)
+    if (p_Context == NULL || p_Context->i_ServerCur == p_Context->i_ServerMax)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
         return NULL;
@@ -227,9 +224,7 @@ MRH_Srv_Server* MRH_SRV_CreateServer(MRH_Srv_Context* p_Context, const char* p_C
         return NULL;
     }
     
-    memset(p_Server->p_Channel, '\0', MRH_SRV_SIZE_SERVER_CHANNEL);
     memset(p_Server->p_Address, '\0', MRH_SRV_SIZE_SERVER_ADDRESS);
-    strncpy(p_Server->p_Channel, p_Channel, MRH_SRV_SIZE_SERVER_CHANNEL);
     
     p_Server->i_Port = MRH_SRV_PORT_INVALID;
     p_Server->u8_DeviceType = p_Context->u8_DeviceType;

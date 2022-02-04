@@ -315,7 +315,7 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
     if (p_Server == NULL || p_Buffer == NULL)
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_INVALID_PARAM);
-        return MRH_SRV_CS_MSG_UNK;
+        return MRH_SRV_MSG_UNK;
     }
     
     MRH_MsQuicConnection* p_MsQuic = p_Server->p_MsQuic;
@@ -351,7 +351,7 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
     }
     
     // Nothing
-    return MRH_SRV_CS_MSG_UNK;
+    return MRH_SRV_MSG_UNK;
 }
 
 int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
@@ -369,48 +369,22 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
          */
         
         // Server Auth
-        case MRH_SRV_S_MSG_AUTH_CHALLENGE:
-            TO_MRH_SRV_S_MSG_AUTH_CHALLENGE((MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA*)p_Message, p_Buffer);
+        case MRH_SRV_MSG_AUTH_CHALLENGE:
+            TO_MRH_SRV_MSG_AUTH_CHALLENGE((MRH_SRV_MSG_AUTH_CHALLENGE_DATA*)p_Message, p_Buffer);
             break;
-        case MRH_SRV_S_MSG_AUTH_RESULT:
-            TO_MRH_SRV_S_MSG_AUTH_RESULT((MRH_SRV_S_MSG_AUTH_RESULT_DATA*)p_Message, p_Buffer);
-            break;
-            
-        // Device Auth
-        case MRH_SRV_C_MSG_PAIR_REQUEST:
-            TO_MRH_SRV_C_MSG_PAIR_REQUEST((MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Message, p_Buffer);
-            break;
-        case MRH_SRV_C_MSG_PAIR_CHALLENGE:
-            TO_MRH_SRV_C_MSG_PAIR_CHALLENGE((MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Message, p_Buffer);
-            break;
-        case MRH_SRV_C_MSG_PAIR_PROOF:
-            TO_MRH_SRV_C_MSG_PAIR_PROOF((MRH_SRV_C_MSG_PAIR_PROOF_DATA*)p_Message, p_Buffer);
-            break;
-        case MRH_SRV_C_MSG_PAIR_RESULT:
-            TO_MRH_SRV_C_MSG_PAIR_RESULT((MRH_SRV_C_MSG_PAIR_RESULT_DATA*)p_Message, p_Buffer);
+        case MRH_SRV_MSG_AUTH_STATE:
+            TO_MRH_SRV_MSG_AUTH_STATE((MRH_SRV_MSG_AUTH_STATE_DATA*)p_Message, p_Buffer);
             break;
             
-        // Channel
-        case MRH_SRV_S_MSG_CHANNEL_RESPONSE:
-            TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE((MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA*)p_Message, p_Buffer);
+        // Communication
+        case MRH_SRV_MSG_TEXT:
+            TO_MRH_SRV_MSG_TEXT((MRH_SRV_MSG_TEXT_DATA*)p_Message, p_Buffer);
             break;
-            
-        // Text
-        case MRH_SRV_C_MSG_TEXT:
-            TO_MRH_SRV_C_MSG_TEXT((MRH_SRV_C_MSG_TEXT_DATA*)p_Message, p_Buffer);
+        case MRH_SRV_MSG_LOCATION:
+            TO_MRH_SRV_MSG_LOCATION((MRH_SRV_MSG_LOCATION_DATA*)p_Message, p_Buffer);
             break;
-            
-        // Location
-        case MRH_SRV_C_MSG_LOCATION:
-            TO_MRH_SRV_C_MSG_LOCATION((MRH_SRV_C_MSG_LOCATION_DATA*)p_Message, p_Buffer);
-            break;
-            
-        // Custom
-        case MRH_SRV_C_MSG_CUSTOM:
-            TO_MRH_SRV_C_MSG_CUSTOM((MRH_SRV_C_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
-            break;
-        case MRH_SRV_CS_MSG_CUSTOM:
-            TO_MRH_SRV_CS_MSG_CUSTOM((MRH_SRV_CS_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
+        case MRH_SRV_MSG_CUSTOM:
+            TO_MRH_SRV_MSG_CUSTOM((MRH_SRV_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
             break;
             
         /**
@@ -479,59 +453,31 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
          */
         
         // Server Auth
-        case MRH_SRV_C_MSG_AUTH_REQUEST:
-            FROM_MRH_SRV_C_MSG_AUTH_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_AUTH_REQUEST_DATA*)p_Data);
+        case MRH_SRV_MSG_AUTH_REQUEST:
+            FROM_MRH_SRV_MSG_AUTH_REQUEST(p_MessageBuffer, (const MRH_SRV_MSG_AUTH_REQUEST_DATA*)p_Data);
             i_Encrypt = -1;
             break;
-        case MRH_SRV_C_MSG_AUTH_PROOF:
-            FROM_MRH_SRV_C_MSG_AUTH_PROOF(p_MessageBuffer, (const MRH_SRV_C_MSG_AUTH_PROOF_DATA*)p_Data);
-            i_Encrypt = -1;
-            break;
-            
-        // Device Auth
-        case MRH_SRV_C_MSG_PAIR_REQUEST:
-            FROM_MRH_SRV_C_MSG_PAIR_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_REQUEST_DATA*)p_Data);
-            i_Encrypt = -1;
-            break;
-        case MRH_SRV_C_MSG_PAIR_CHALLENGE:
-            FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA*)p_Data);
-            i_Encrypt = -1;
-            break;
-        case MRH_SRV_C_MSG_PAIR_PROOF:
-            FROM_MRH_SRV_C_MSG_PAIR_PROOF(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_PROOF_DATA*)p_Data);
-            i_Encrypt = -1;
-            break;
-        case MRH_SRV_C_MSG_PAIR_RESULT:
-            FROM_MRH_SRV_C_MSG_PAIR_RESULT(p_MessageBuffer, (const MRH_SRV_C_MSG_PAIR_RESULT_DATA*)p_Data);
+        case MRH_SRV_MSG_AUTH_PROOF:
+            FROM_MRH_SRV_MSG_AUTH_PROOF(p_MessageBuffer, (const MRH_SRV_MSG_AUTH_PROOF_DATA*)p_Data);
             i_Encrypt = -1;
             break;
             
-        // Channel
-        case MRH_SRV_C_MSG_CHANNEL_REQUEST:
-            FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(p_MessageBuffer, (const MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA*)p_Data);
+        // Communication
+        case MRH_SRV_MSG_DATA_AVAIL:
+            FROM_MRH_SRV_MSG_DATA_AVAIL(p_MessageBuffer, (const MRH_SRV_MSG_DATA_AVAIL_DATA*)p_Data);
             i_Encrypt = -1;
             break;
-            
-        // Text
-        case MRH_SRV_C_MSG_TEXT:
-            FROM_MRH_SRV_C_MSG_TEXT(p_MessageBuffer, (const MRH_SRV_C_MSG_TEXT_DATA*)p_Data);
+        case MRH_SRV_MSG_TEXT:
+            FROM_MRH_SRV_MSG_TEXT(p_MessageBuffer, (const MRH_SRV_MSG_TEXT_DATA*)p_Data);
             i_Encrypt = 0;
             break;
-            
-        // Location
-        case MRH_SRV_C_MSG_LOCATION:
-            FROM_MRH_SRV_C_MSG_LOCATION(p_MessageBuffer, (const MRH_SRV_C_MSG_LOCATION_DATA*)p_Data);
+        case MRH_SRV_MSG_LOCATION:
+            FROM_MRH_SRV_MSG_LOCATION(p_MessageBuffer, (const MRH_SRV_MSG_LOCATION_DATA*)p_Data);
             i_Encrypt = 0;
             break;
-            
-        // Custom
-        case MRH_SRV_C_MSG_CUSTOM:
-            FROM_MRH_SRV_C_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_C_MSG_CUSTOM_DATA*)p_Data);
+        case MRH_SRV_MSG_CUSTOM:
+            FROM_MRH_SRV_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_MSG_CUSTOM_DATA*)p_Data);
             i_Encrypt = 0;
-            break;
-        case MRH_SRV_CS_MSG_CUSTOM:
-            FROM_MRH_SRV_CS_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_CS_MSG_CUSTOM_DATA*)p_Data);
-            i_Encrypt = -1;
             break;
             
         /**

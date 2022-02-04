@@ -32,7 +32,6 @@
 
 // Pre-defined
 #define MRH_SRV_SIZE_SERVER_ADDRESS 256
-#define MRH_SRV_SIZE_SERVER_CHANNEL 64
 
 #define MRH_SRV_SIZE_ACCOUNT_MAIL 128
 #define MRH_SRV_SIZE_ACCOUNT_PASSWORD 32 // Max key length, equals crypto_secretbox_KEYBYTES and crypto_box_SEEDBYTES

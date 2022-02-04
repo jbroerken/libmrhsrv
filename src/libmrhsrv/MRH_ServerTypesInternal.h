@@ -50,7 +50,6 @@ extern "C"
     typedef struct MRH_Srv_Server_t
     {
         // Address
-        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL];
         char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
         int i_Port;
         

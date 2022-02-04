@@ -37,222 +37,107 @@
 //*************************************************************************************
 
 /**
- *  Set the message buffer for a given TO_MRH_SRV_C_MSG_AUTH_REQUEST net message.
+ *  Set the message buffer for a given TO_MRH_SRV_MSG_AUTH_REQUEST net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_REQUEST_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given TO_MRH_SRV_S_MSG_AUTH_CHALLENGE net message with a given buffer.
+ *  Set the data for a given TO_MRH_SRV_MSG_AUTH_CHALLENGE net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer);
+extern void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 /**
- *  Set the message buffer for a given TO_MRH_SRV_C_MSG_AUTH_PROOF net message.
+ *  Set the message buffer for a given TO_MRH_SRV_MSG_AUTH_PROOF net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_PROOF_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given TO_MRH_SRV_S_MSG_AUTH_RESULT net message with a given buffer.
+ *  Set the data for a given TO_MRH_SRV_MSG_AUTH_STATE net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_S_MSG_AUTH_RESULT(MRH_SRV_S_MSG_AUTH_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer);
+extern void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 //*************************************************************************************
-// Device Auth
-//*************************************************************************************
-
-/**
- *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_REQUEST net message.
- *
- *  \param p_Buffer The buffer to set.
- *  \param p_NetMessage The net message to use.
- */
-
-extern void FROM_MRH_SRV_C_MSG_PAIR_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage);
-
-/**
- *  Set the data for a given MRH_SRV_C_MSG_PAIR_REQUEST net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_C_MSG_PAIR_REQUEST(MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-/**
- *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_CHALLENGE net message.
- *
- *  \param p_Buffer The buffer to set.
- *  \param p_NetMessage The net message to use.
- */
-
-extern void FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage);
-
-/**
- *  Set the data for a given MRH_SRV_C_MSG_PAIR_CHALLENGE net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-/**
- *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_PROOF net message.
- *
- *  \param p_Buffer The buffer to set.
- *  \param p_NetMessage The net message to use.
- */
-
-extern void FROM_MRH_SRV_C_MSG_PAIR_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage);
-
-/**
- *  Set the data for a given MRH_SRV_C_MSG_PAIR_PROOF net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_C_MSG_PAIR_PROOF(MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-/**
- *  Set the message buffer for a given MRH_SRV_C_MSG_PAIR_RESULT net message.
- *
- *  \param p_Buffer The buffer to set.
- *  \param p_NetMessage The net message to use.
- */
-
-extern void FROM_MRH_SRV_C_MSG_PAIR_RESULT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_RESULT_DATA* p_NetMessage);
-
-/**
- *  Set the data for a given MRH_SRV_C_MSG_PAIR_RESULT net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_C_MSG_PAIR_RESULT(MRH_SRV_C_MSG_PAIR_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-//*************************************************************************************
-// Channel
+// Communication
 //*************************************************************************************
 
 /**
- *  Set the message buffer for a given MRH_SRV_C_MSG_CHANNEL_REQUEST net message.
+ *  Set the message buffer for a given MRH_SRV_MSG_DATA_AVIL net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage);
 
 /**
- *  Set the data for a given MRH_SRV_C_MSG_CHANNEL_RESPONSE net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE(MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-//*************************************************************************************
-// Text
-//*************************************************************************************
-
-/**
- *  Set the message buffer for a given MRH_SRV_C_MSG_TEXT net message.
+ *  Set the message buffer for a given MRH_SRV_MSG_TEXT net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given MRH_SRV_C_MSG_TEXT net message with a given buffer.
+ *  Set the data for a given MRH_SRV_MSG_TEXT net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_C_MSG_TEXT(MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-//*************************************************************************************
-// Location
-//*************************************************************************************
+extern void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 /**
- *  Set the message buffer for a given MRH_SRV_C_MSG_LOCATION net message.
+ *  Set the message buffer for a given MRH_SRV_MSG_LOCATION net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given MRH_SRV_C_MSG_LOCATION net message with a given buffer.
+ *  Set the data for a given MRH_SRV_MSG_LOCATION net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_C_MSG_LOCATION(MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-//*************************************************************************************
-// Custom
-//*************************************************************************************
+extern void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 /**
- *  Set the message buffer for a given MRH_SRV_C_MSG_CUSTOM net message.
+ *  Set the message buffer for a given MRH_SRV_MSG_CUSTOM net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
  */
 
-extern void FROM_MRH_SRV_C_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage);
+extern void FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given MRH_SRV_C_MSG_CUSTOM net message with a given buffer.
+ *  Set the data for a given MRH_SRV_MSG_CUSTOM net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_C_MSG_CUSTOM(MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
-
-/**
- *  Set the message buffer for a given MRH_SRV_CS_MSG_CUSTOM net message.
- *
- *  \param p_Buffer The buffer to set.
- *  \param p_NetMessage The net message to use.
- */
-
-extern void FROM_MRH_SRV_CS_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage);
-
-/**
- *  Set the data for a given MRH_SRV_CS_MSG_CUSTOM net message with a given buffer.
- *
- *  \param p_NetMessage The net message to set.
- *  \param p_Buffer The buffer to use.
- */
-
-extern void TO_MRH_SRV_CS_MSG_CUSTOM(MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
+extern void TO_MRH_SRV_MSG_CUSTOM(MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 
 #endif /* MRH_NetMessageV1_h */

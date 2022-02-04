@@ -52,39 +52,23 @@ extern "C"
          */
         
         // Unknown
-        MRH_SRV_CS_MSG_UNK = 0,                     // Both - Unknown data [Plain]
-        
-        // Availability
-        MRH_SRV_S_MSG_PARTNER_CLOSED = 1,           // Server - A client closed connection (for other clients, etc.) [Plain]
+        MRH_SRV_MSG_UNK = 0,                        // Unknown data
         
         // Server Auth
-        MRH_SRV_C_MSG_AUTH_REQUEST = 2,             // Client - Request authentication [Plain]
-        MRH_SRV_S_MSG_AUTH_CHALLENGE = 3,           // Server - Challenge client to provide auth data [Plain]
-        MRH_SRV_C_MSG_AUTH_PROOF = 4,               // Client - Provide proof of valid auth data [Plain]
-        MRH_SRV_S_MSG_AUTH_RESULT = 5,              // Server - Proof check result [Plain]
+        MRH_SRV_MSG_AUTH_REQUEST = 1,               // Request authentication
+        MRH_SRV_MSG_AUTH_CHALLENGE = 2,             // Challenge client to provide auth data
+        MRH_SRV_MSG_AUTH_PROOF = 3,                 // Provide proof of valid auth data
+        MRH_SRV_MSG_AUTH_STATE = 4,                 // Current authentication state
         
-        // Device Pairing
-        MRH_SRV_C_MSG_PAIR_REQUEST = 6,             // Client - Request pairing with platform client [Plain]
-        MRH_SRV_C_MSG_PAIR_CHALLENGE = 7,           // Client - Give nonce to app client to hash [Plain]
-        MRH_SRV_C_MSG_PAIR_PROOF,                   // Client - Return the hashed nonce to platform client [Plain]
-        MRH_SRV_C_MSG_PAIR_RESULT,                  // Client - Result of pairing with platform client [Plain]
-        
-        // Channel
-        MRH_SRV_C_MSG_CHANNEL_REQUEST,              // Client - Request channel info [Plain]
-        MRH_SRV_S_MSG_CHANNEL_RESPONSE,             // Server - Provide channel info [Plain]
-        
-        // Text
-        MRH_SRV_C_MSG_TEXT,                         // Client - Send text string [Encrypted]
-        
-        // Location
-        MRH_SRV_C_MSG_LOCATION,                     // Client - Send location data [Encrypted]
-        
-        // Custom
-        MRH_SRV_C_MSG_CUSTOM,                       // Client - Custom message [Encrypted]
-        MRH_SRV_CS_MSG_CUSTOM,                      // Both - Custom message [Plain]
+        // Communication
+        MRH_SRV_MSG_DATA_AVAIL = 5,                 // Client requests data
+        MRH_SRV_MSG_NO_DATA = 6,                    // No data available
+        MRH_SRV_MSG_TEXT = 7,                       // Text data
+        MRH_SRV_MSG_LOCATION,                       // Location data
+        MRH_SRV_MSG_CUSTOM,                         // Custom data
         
         // Bounds
-        MRH_SRV_NET_MESSAGE_MAX = MRH_SRV_CS_MSG_CUSTOM,
+        MRH_SRV_NET_MESSAGE_MAX = MRH_SRV_MSG_CUSTOM,
         
         MRH_SRV_NET_MESSAGE_COUNT = MRH_SRV_NET_MESSAGE_MAX + 1
         
@@ -106,27 +90,18 @@ extern "C"
         // Unk
         MRH_SRV_NET_MESSAGE_ERR_UNK = 1,                        // ???
         
-        // Server Generall
+        // Server General
         MRH_SRV_NET_MESSAGE_ERR_SG_ERROR = 2,                   // Internal server error
         
         // Server Auth
-        MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE = 3,               // No device found for device key
-        MRH_SRV_NET_MESSAGE_ERR_SA_VERSION = 4,                 // Wrong OpCode Version
-        MRH_SRV_NET_MESSAGE_ERR_SA_UNK_ACTOR = 5,               // Unknown actor id
-        MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 6,                 // Account data given was wrong
-        MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 7,       // Connection already exists
-        MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE,                 // Temporary downtime
-        
-        // Channel
-        MRH_SRV_NET_MESSAGE_ERR_CR_NO_CHANNEL,                  // No channel was found for identifier
-        MRH_SRV_NET_MESSAGE_ERR_CR_FULL,                        // All channels are full
-        MRH_SRV_NET_MESSAGE_ERR_CR_NO_PLATFORM,                 // No platform client found for app client
-        
-        // Device Auth
-        MRH_SRV_NET_MESSAGE_ERR_DA_PAIR,                        // Device pairing failed
+        MRH_SRV_NET_MESSAGE_ERR_SA_VERSION = 3,                 // Wrong OpCode Version
+        MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 4,                 // Account data given was wrong
+        MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 5,       // Connection already exists
+        MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE = 6,             // Temporary downtime
+        MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED = 7,                 // Authentication expired
         
         // Bounds
-        MRH_SRV_NET_MESSAGE_ERROR_MAX = MRH_SRV_NET_MESSAGE_ERR_DA_PAIR,
+        MRH_SRV_NET_MESSAGE_ERROR_MAX = MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED,
         
         MRH_SRV_NET_MESSAGE_ERROR_COUNT = MRH_SRV_NET_MESSAGE_ERROR_MAX + 1
         
@@ -146,14 +121,14 @@ extern "C"
     //  Server Auth
     //
     
-    typedef struct MRH_SRV_C_MSG_AUTH_REQUEST_DATA_t
+    typedef struct MRH_SRV_MSG_AUTH_REQUEST_DATA_t
     {
         char p_Mail[MRH_SRV_SIZE_ACCOUNT_MAIL]; // The account mail
         char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Device valid for server
-        uint8_t u8_Actor;  // Which type of client (platform or app)
+        uint8_t u8_ClientType;  // Which type of client (platform or app)
         uint8_t u8_Version; // NetMessage version in use
         
-    }MRH_SRV_C_MSG_AUTH_REQUEST_DATA;
+    }MRH_SRV_MSG_AUTH_REQUEST_DATA;
     
     typedef struct MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA_t
     {
@@ -161,107 +136,51 @@ extern "C"
         uint32_t u32_Nonce; // Nonce to hash
         uint8_t u8_HashType;
         
-    }MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA;
+    }MRH_SRV_MSG_AUTH_CHALLENGE_DATA;
     
     typedef struct MRH_SRV_C_MSG_AUTH_PROOF_DATA_t
     {
         uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
         
-    }MRH_SRV_C_MSG_AUTH_PROOF_DATA;
+    }MRH_SRV_MSG_AUTH_PROOF_DATA;
     
-    typedef struct MRH_SRV_S_MSG_AUTH_RESULT_DATA_t
+    typedef struct MRH_SRV_S_MSG_AUTH_STATE_DATA_t
     {
-        uint8_t u8_Result; // The result of the auth
+        uint8_t u8_Result; // The result of the auth state
+        uint8_t p_Key[MRH_SRV_SIZE_MESSAGE_BUFFER - 2];
         
-    }MRH_SRV_S_MSG_AUTH_RESULT_DATA;
+    }MRH_SRV_MSG_AUTH_STATE_DATA;
     
     //
-    //  Device Auth
+    //  Communication
     //
     
-    typedef struct MRH_SRV_C_MSG_PAIR_REQUEST_DATA_t
+    typedef struct MRH_SRV_MSG_DATA_AVAIL_DATA_t
     {
-        uint8_t u8_Actor; // Type of client which wants to pair
+        uint8_t p_Key[MRH_SRV_SIZE_MESSAGE_BUFFER - 2];
         
-    }MRH_SRV_C_MSG_PAIR_REQUEST_DATA;
+    }MRH_SRV_MSG_DATA_AVAIL_DATA;
     
-    typedef struct MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA_t
-    {
-        uint32_t u32_Nonce;
-        uint8_t u8_Actor; // Type of client which will be paired with
-        
-    }MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA;
-    
-    typedef struct MRH_SRV_C_MSG_PAIR_PROOF_DATA_t
-    {
-        uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Client password hashed nonce
-        char p_DeviceKey[MRH_SRV_SIZE_DEVICE_KEY]; // Target verification
-        
-    }MRH_SRV_C_MSG_PAIR_PROOF_DATA;
-    
-    typedef struct MRH_SRV_C_MSG_PAIR_RESULT_DATA_t
-    {
-        uint8_t u8_Result; // Result of device pair
-        
-    }MRH_SRV_C_MSG_PAIR_RESULT_DATA;
-    
-    //
-    //  Channel
-    //
-    
-    typedef struct MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA_t
-    {
-        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL]; // Requested channel
-        
-    }MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA;
-    
-    typedef struct MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA_t
-    {
-        char p_Channel[MRH_SRV_SIZE_SERVER_CHANNEL]; // Requested channel
-        char p_Address[MRH_SRV_SIZE_SERVER_ADDRESS];
-        uint32_t u32_Port; // carries full int
-        uint8_t u8_Result; // 0 success, else failed (ignore other data)
-        
-    }MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA;
-    
-    //
-    //  Text
-    //
-    
-    typedef struct MRH_SRV_C_MSG_TEXT_DATA_t
+    typedef struct MRH_SRV_MSG_TEXT_DATA_t
     {
         char p_String[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // UTF-8
         
-    }MRH_SRV_C_MSG_TEXT_DATA;
+    }MRH_SRV_MSG_TEXT_DATA;
     
-    //
-    // Location
-    //
-    
-    typedef struct MRH_SRV_C_MSG_LOCATION_DATA_t
+    typedef struct MRH_SRV_MSG_LOCATION_DATA_t
     {
         float f32_Latitude;
         float f32_Longtitude;
         float f32_Elevation;
         float f32_Facing;
         
-    }MRH_SRV_C_MSG_LOCATION_DATA;
+    }MRH_SRV_MSG_LOCATION_DATA;
     
-    //
-    // Custom
-    //
-    
-    typedef struct MRH_SRV_C_MSG_CUSTOM_DATA_t
+    typedef struct MRH_SRV_MSG_CUSTOM_DATA_t
     {
-        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the client sent
+        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1];
         
-    }MRH_SRV_C_MSG_CUSTOM_DATA;
-    
-    typedef struct MRH_SRV_CS_MSG_CUSTOM_DATA_t
-    {
-        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // Whatever the server sent
-        
-    }MRH_SRV_CS_MSG_CUSTOM_DATA;
+    }MRH_SRV_MSG_CUSTOM_DATA;
     
 #ifdef __cplusplus
 }

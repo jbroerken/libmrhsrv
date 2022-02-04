@@ -47,13 +47,13 @@
 // Server Auth
 //*************************************************************************************
 
-void FROM_MRH_SRV_C_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_REQUEST_DATA* p_NetMessage)
+void FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage)
 {
     memset(p_Buffer,
            '\0',
            MRH_SRV_SIZE_MESSAGE_BUFFER);
     
-    p_Buffer[0] = MRH_SRV_C_MSG_AUTH_REQUEST;
+    p_Buffer[0] = MRH_SRV_MSG_AUTH_REQUEST;
     ++p_Buffer;
     
     memcpy(p_Buffer,
@@ -64,11 +64,11 @@ void FROM_MRH_SRV_C_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH
            &(p_NetMessage->p_DeviceKey[0]),
            MRH_SRV_SIZE_DEVICE_KEY);
     
-    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY] = p_NetMessage->u8_Actor;
+    p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY] = p_NetMessage->u8_ClientType;
     p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY + 1] = p_NetMessage->u8_Version;
 }
 
-void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
@@ -87,13 +87,13 @@ void TO_MRH_SRV_S_MSG_AUTH_CHALLENGE(MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA* p_NetMes
     p_NetMessage->u8_HashType = p_Buffer[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT + sizeof(uint32_t)];
 }
 
-void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_PROOF_DATA* p_NetMessage)
+void FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage)
 {
     memset(p_Buffer,
            '\0',
            MRH_SRV_SIZE_MESSAGE_BUFFER);
     
-    p_Buffer[0] = MRH_SRV_C_MSG_AUTH_PROOF;
+    p_Buffer[0] = MRH_SRV_MSG_AUTH_PROOF;
     ++p_Buffer;
     
     memcpy(p_Buffer,
@@ -101,171 +101,34 @@ void FROM_MRH_SRV_C_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_AUTH_P
            MRH_SRV_SIZE_NONCE_HASH);
 }
 
-void TO_MRH_SRV_S_MSG_AUTH_RESULT(MRH_SRV_S_MSG_AUTH_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
     p_NetMessage->u8_Result = p_Buffer[0];
-}
-
-//*************************************************************************************
-// Device Auth
-//*************************************************************************************
-
-void FROM_MRH_SRV_C_MSG_PAIR_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage)
-{
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
     
-    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_REQUEST;
-    p_Buffer[1] = p_NetMessage->u8_Actor;
-}
-
-void TO_MRH_SRV_C_MSG_PAIR_REQUEST(MRH_SRV_C_MSG_PAIR_REQUEST_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    ++p_Buffer;
-    
-    p_NetMessage->u8_Actor = p_Buffer[0];
-}
-
-void FROM_MRH_SRV_C_MSG_PAIR_CHALLENGE(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage)
-{
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_CHALLENGE;
-    ++p_Buffer;
-    
-    if (IS_BIG_ENDIAN)
-    {
-        uint32_t u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
-        memcpy(p_Buffer,
-               &u32_Nonce,
-               sizeof(uint32_t));
-    }
-    else
-    {
-        memcpy(p_Buffer,
-               &(p_NetMessage->u32_Nonce),
-               sizeof(uint32_t));
-    }
-    
-    p_Buffer[sizeof(uint32_t)] = p_NetMessage->u8_Actor;
-}
-
-void TO_MRH_SRV_C_MSG_PAIR_CHALLENGE(MRH_SRV_C_MSG_PAIR_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    ++p_Buffer;
-    
-    memcpy(&(p_NetMessage->u32_Nonce),
-           p_Buffer,
-           sizeof(uint32_t));
-    
-    p_NetMessage->u8_Actor = p_Buffer[sizeof(uint32_t)];
-    
-    if (IS_BIG_ENDIAN)
-    {
-        p_NetMessage->u32_Nonce = bswap_32(p_NetMessage->u32_Nonce);
-    }
-}
-
-void FROM_MRH_SRV_C_MSG_PAIR_PROOF(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage)
-{
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_PROOF;
-    ++p_Buffer;
-    
-    memcpy(&(p_Buffer[1]),
-           &(p_NetMessage->p_NonceHash[0]),
-           MRH_SRV_SIZE_NONCE_HASH);
-    memcpy(&(p_Buffer[1 + MRH_SRV_SIZE_NONCE_HASH]),
-           &(p_NetMessage->p_DeviceKey[0]),
-           MRH_SRV_SIZE_DEVICE_KEY);
-}
-
-void TO_MRH_SRV_C_MSG_PAIR_PROOF(MRH_SRV_C_MSG_PAIR_PROOF_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    ++p_Buffer;
-    
-    memcpy(&(p_NetMessage->p_NonceHash[0]),
+    memcpy(p_NetMessage->p_Key,
            &(p_Buffer[1]),
-           MRH_SRV_SIZE_NONCE_HASH);
-    memcpy(&(p_NetMessage->p_DeviceKey[0]),
-           &(p_Buffer[1 + MRH_SRV_SIZE_NONCE_HASH]),
-           MRH_SRV_SIZE_DEVICE_KEY);
-}
-
-void FROM_MRH_SRV_C_MSG_PAIR_RESULT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_PAIR_RESULT_DATA* p_NetMessage)
-{
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_C_MSG_PAIR_RESULT;
-    ++p_Buffer;
-    
-    p_Buffer[0] = p_NetMessage->u8_Result;
-}
-
-void TO_MRH_SRV_C_MSG_PAIR_RESULT(MRH_SRV_C_MSG_PAIR_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    ++p_Buffer;
-    
-    p_NetMessage->u8_Result = p_Buffer[0];
+           MRH_SRV_SIZE_MESSAGE_BUFFER - 2);
 }
 
 //*************************************************************************************
-// Channel
+// Communication
 //*************************************************************************************
 
-void FROM_MRH_SRV_C_MSG_CHANNEL_REQUEST(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CHANNEL_REQUEST_DATA* p_NetMessage)
+void FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage)
 {
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_C_MSG_CHANNEL_REQUEST;
+    p_Buffer[0] = MRH_SRV_MSG_DATA_AVAIL;
     ++p_Buffer;
     
     memcpy(p_Buffer,
-           &(p_NetMessage->p_Channel[0]),
-           MRH_SRV_SIZE_SERVER_CHANNEL);
+           &(p_NetMessage->p_Key[0]),
+           MRH_SRV_SIZE_MESSAGE_BUFFER - 2);
 }
 
-void TO_MRH_SRV_S_MSG_CHANNEL_RESPONSE(MRH_SRV_S_MSG_CHANNEL_RESPONSE_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
 {
-    ++p_Buffer;
-    
-    memcpy(&(p_NetMessage->p_Channel[0]),
-           p_Buffer,
-           MRH_SRV_SIZE_SERVER_CHANNEL);
-    memcpy(&(p_NetMessage->p_Address[0]),
-           &(p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL]),
-           MRH_SRV_SIZE_SERVER_ADDRESS);
-    memcpy(&(p_NetMessage->u32_Port),
-           &(p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL + MRH_SRV_SIZE_SERVER_ADDRESS]),
-           sizeof(uint32_t));
-    
-    if (IS_BIG_ENDIAN)
-    {
-        p_NetMessage->u32_Port = bswap_32(p_NetMessage->u32_Port);
-    }
-    
-    p_NetMessage->u8_Result = p_Buffer[MRH_SRV_SIZE_SERVER_CHANNEL + MRH_SRV_SIZE_SERVER_ADDRESS + sizeof(uint32_t)];
-}
-
-//*************************************************************************************
-// Text
-//*************************************************************************************
-
-void FROM_MRH_SRV_C_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage)
-{
-    p_Buffer[0] = MRH_SRV_C_MSG_TEXT;
+    p_Buffer[0] = MRH_SRV_MSG_TEXT;
     ++p_Buffer;
     
     memcpy(p_Buffer,
@@ -273,7 +136,7 @@ void FROM_MRH_SRV_C_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_C_MSG_TEXT_DATA* p
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
 
-void TO_MRH_SRV_C_MSG_TEXT(MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
@@ -281,10 +144,6 @@ void TO_MRH_SRV_C_MSG_TEXT(MRH_SRV_C_MSG_TEXT_DATA* p_NetMessage, const uint8_t*
            p_Buffer,
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
-
-//*************************************************************************************
-// Location
-//*************************************************************************************
 
 static inline float SwapFloatBytes(float f32_Source)
 {
@@ -299,13 +158,13 @@ static inline float SwapFloatBytes(float f32_Source)
     return *((float*)p_Result);
 }
 
-void FROM_MRH_SRV_C_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage)
+void FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage)
 {
     memset(p_Buffer,
            '\0',
            MRH_SRV_SIZE_MESSAGE_BUFFER);
     
-    p_Buffer[0] = MRH_SRV_C_MSG_LOCATION;
+    p_Buffer[0] = MRH_SRV_MSG_LOCATION;
     ++p_Buffer;
     
     if (IS_BIG_ENDIAN)
@@ -345,7 +204,7 @@ void FROM_MRH_SRV_C_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_C_MSG_LOCATION
     }
 }
 
-void TO_MRH_SRV_C_MSG_LOCATION(MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
@@ -371,13 +230,9 @@ void TO_MRH_SRV_C_MSG_LOCATION(MRH_SRV_C_MSG_LOCATION_DATA* p_NetMessage, const 
     }
 }
 
-//*************************************************************************************
-// Custom
-//*************************************************************************************
-
-void FROM_MRH_SRV_C_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage)
+void FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage)
 {
-    p_Buffer[0] = MRH_SRV_C_MSG_CUSTOM;
+    p_Buffer[0] = MRH_SRV_MSG_CUSTOM;
     ++p_Buffer;
     
     memcpy(p_Buffer,
@@ -385,30 +240,11 @@ void FROM_MRH_SRV_C_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_C_MSG_CUSTOM_DAT
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
 
-void TO_MRH_SRV_C_MSG_CUSTOM(MRH_SRV_C_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_CUSTOM(MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     ++p_Buffer;
     
     memcpy(p_NetMessage->p_Buffer,
-           p_Buffer,
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
-}
-
-void FROM_MRH_SRV_CS_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage)
-{
-    p_Buffer[0] = MRH_SRV_CS_MSG_CUSTOM;
-    ++p_Buffer;
-    
-    memcpy(p_Buffer,
-           &(p_NetMessage->p_Buffer[0]),
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
-}
-
-void TO_MRH_SRV_CS_MSG_CUSTOM(MRH_SRV_CS_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    ++p_Buffer;
-    
-    memcpy(&(p_NetMessage->p_Buffer[0]),
            p_Buffer,
            MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
 }
