@@ -68,13 +68,13 @@ extern void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_Net
 extern size_t FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage);
 
 /**
- *  Set the data for a given TO_MRH_SRV_MSG_AUTH_STATE net message with a given buffer.
+ *  Set the data for a given TO_MRH_SRV_MSG_AUTH_RESULT net message with a given buffer.
  *
  *  \param p_NetMessage The net message to set.
  *  \param p_Buffer The buffer to use.
  */
 
-extern void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer);
+extern void TO_MRH_SRV_MSG_AUTH_RESULT(MRH_SRV_MSG_AUTH_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer);
 
 //*************************************************************************************
 // Communication

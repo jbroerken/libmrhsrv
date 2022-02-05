@@ -89,7 +89,7 @@ size_t FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PRO
     return MRH_SRV_SIZE_NONCE_HASH;
 }
 
-void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer)
+void TO_MRH_SRV_MSG_AUTH_RESULT(MRH_SRV_MSG_AUTH_RESULT_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     p_NetMessage->u8_Result = p_Buffer[0];
 }

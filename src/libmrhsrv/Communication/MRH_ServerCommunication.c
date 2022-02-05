@@ -387,9 +387,9 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
             TO_MRH_SRV_MSG_AUTH_CHALLENGE((MRH_SRV_MSG_AUTH_CHALLENGE_DATA*)p_Message,
                                           &(p_Buffer[1]));
             break;
-        case MRH_SRV_MSG_AUTH_STATE:
-            TO_MRH_SRV_MSG_AUTH_STATE((MRH_SRV_MSG_AUTH_STATE_DATA*)p_Message,
-                                      &(p_Buffer[1]));
+        case MRH_SRV_MSG_AUTH_RESULT:
+            TO_MRH_SRV_MSG_AUTH_RESULT((MRH_SRV_MSG_AUTH_RESULT_DATA*)p_Message,
+                                       &(p_Buffer[1]));
             break;
             
         // Communication

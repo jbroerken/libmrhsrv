@@ -58,7 +58,7 @@ extern "C"
         MRH_SRV_MSG_AUTH_REQUEST = 1,               // Request authentication
         MRH_SRV_MSG_AUTH_CHALLENGE = 2,             // Challenge client to provide auth data
         MRH_SRV_MSG_AUTH_PROOF = 3,                 // Provide proof of valid auth data
-        MRH_SRV_MSG_AUTH_STATE = 4,                 // Current authentication state
+        MRH_SRV_MSG_AUTH_RESULT = 4,                // Authentication result
         
         // Communication
         MRH_SRV_MSG_DATA_AVAIL = 5,                 // Client requests data
@@ -146,11 +146,11 @@ extern "C"
         
     }MRH_SRV_MSG_AUTH_PROOF_DATA;
     
-    typedef struct MRH_SRV_S_MSG_AUTH_STATE_DATA_t
+    typedef struct MRH_SRV_S_MSG_AUTH_RESULT_DATA_t
     {
         uint8_t u8_Result; // The result of the auth state
         
-    }MRH_SRV_MSG_AUTH_STATE_DATA;
+    }MRH_SRV_MSG_AUTH_RESULT_DATA;
     
     //
     //  Communication
