@@ -92,10 +92,6 @@ size_t FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PRO
 void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
     p_NetMessage->u8_Result = p_Buffer[0];
-    
-    memcpy(p_NetMessage->p_Key,
-           &(p_Buffer[1]),
-           MRH_SRV_SIZE_AUTH_KEY);
 }
 
 //*************************************************************************************
@@ -106,11 +102,7 @@ size_t FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DAT
 {
     p_Buffer[0] = p_NetMessage->u8_Data;
     
-    memcpy(&(p_Buffer[1]),
-           &(p_NetMessage->p_Key[0]),
-           MRH_SRV_SIZE_AUTH_KEY);
-    
-    return (MRH_SRV_SIZE_AUTH_KEY + 1);
+    return 1;
 }
 
 size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
@@ -119,7 +111,22 @@ size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_N
            &(p_NetMessage->p_String[0]),
            MRH_SRV_SIZE_TEXT_STRING);
     
-    return MRH_SRV_SIZE_TEXT_STRING;
+    if (IS_BIG_ENDIAN)
+    {
+        uint64_t u64_TimestampS = bswap_64(p_NetMessage->u64_TimestampS);
+        
+        memcpy(&(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+               &(u64_TimestampS),
+               sizeof(uint64_t));
+    }
+    else
+    {
+        memcpy(&(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+               &(p_NetMessage->u64_TimestampS),
+               sizeof(uint64_t));
+    }
+    
+    return (MRH_SRV_SIZE_TEXT_STRING + sizeof(uint64_t));
 }
 
 void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -127,6 +134,14 @@ void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_B
     memcpy(&(p_NetMessage->p_String[0]),
            p_Buffer,
            MRH_SRV_SIZE_TEXT_STRING);
+    memcpy(&(p_NetMessage->u64_TimestampS),
+           &(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+           sizeof(uint64_t));
+    
+    if (IS_BIG_ENDIAN)
+    {
+        p_NetMessage->u64_TimestampS = bswap_64(p_NetMessage->u64_TimestampS);
+    }
 }
 
 static inline float SwapFloatBytes(float f32_Source)
@@ -150,6 +165,7 @@ size_t FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_D
         float f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
         float f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
         float f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
+        uint64_t u64_TimestampS = bswap_64(p_NetMessage->u64_TimestampS);
         
         memcpy(p_Buffer,
                &f32_Latitude,
@@ -163,6 +179,9 @@ size_t FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_D
         memcpy(&(p_Buffer[sizeof(float) * 3]),
                &f32_Facing,
                sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 4]),
+               &u64_TimestampS,
+               sizeof(uint64_t));
     }
     else
     {
@@ -178,9 +197,12 @@ size_t FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_D
         memcpy(&(p_Buffer[sizeof(float) * 3]),
                &(p_NetMessage->f32_Facing),
                sizeof(float));
+        memcpy(&(p_Buffer[sizeof(float) * 4]),
+               &(p_NetMessage->u64_TimestampS),
+               sizeof(uint64_t));
     }
     
-    return (sizeof(float) * 4);
+    return ((sizeof(float) * 4) + sizeof(uint64_t));
 }
 
 void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer)
@@ -197,6 +219,9 @@ void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint
     memcpy(&(p_NetMessage->f32_Facing),
            &(p_Buffer[sizeof(float) * 3]),
            sizeof(float));
+    memcpy(&(p_NetMessage->u64_TimestampS),
+           &(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+           sizeof(uint64_t));
     
     if (IS_BIG_ENDIAN)
     {
@@ -204,6 +229,7 @@ void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint
         p_NetMessage->f32_Longtitude = SwapFloatBytes(p_NetMessage->f32_Longtitude);
         p_NetMessage->f32_Elevation = SwapFloatBytes(p_NetMessage->f32_Elevation);
         p_NetMessage->f32_Facing = SwapFloatBytes(p_NetMessage->f32_Facing);
+        p_NetMessage->u64_TimestampS = bswap_64(p_NetMessage->u64_TimestampS);
     }
 }
 

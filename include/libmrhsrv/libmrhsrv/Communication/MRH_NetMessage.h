@@ -149,7 +149,6 @@ extern "C"
     typedef struct MRH_SRV_S_MSG_AUTH_STATE_DATA_t
     {
         uint8_t u8_Result; // The result of the auth state
-        uint8_t p_Key[MRH_SRV_SIZE_AUTH_KEY];
         
     }MRH_SRV_MSG_AUTH_STATE_DATA;
     
@@ -160,13 +159,13 @@ extern "C"
     typedef struct MRH_SRV_MSG_DATA_AVAIL_DATA_t
     {
         uint8_t u8_Data; // The type of data requested
-        uint8_t p_Key[MRH_SRV_SIZE_AUTH_KEY];
         
     }MRH_SRV_MSG_DATA_AVAIL_DATA;
     
     typedef struct MRH_SRV_MSG_TEXT_DATA_t
     {
         char p_String[MRH_SRV_SIZE_TEXT_STRING]; // UTF-8
+        uint64_t u64_TimestampS;
         
     }MRH_SRV_MSG_TEXT_DATA;
     
@@ -176,6 +175,7 @@ extern "C"
         float f32_Longtitude;
         float f32_Elevation;
         float f32_Facing;
+        uint64_t u64_TimestampS;
         
     }MRH_SRV_MSG_LOCATION_DATA;
     
