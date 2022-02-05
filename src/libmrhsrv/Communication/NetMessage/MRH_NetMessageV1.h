@@ -92,6 +92,15 @@ extern void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage,
 extern size_t FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage);
 
 /**
+ *  Set the data for a given MRH_SRV_MSG_NO_DATA net message with a given buffer.
+ *
+ *  \param p_NetMessage The net message to set.
+ *  \param p_Buffer The buffer to use.
+ */
+
+extern void TO_MRH_SRV_MSG_NO_DATA(MRH_SRV_MSG_NO_DATA_DATA* p_NetMessage, const uint8_t* p_Buffer);
+
+/**
  *  Set the message buffer for a given MRH_SRV_MSG_TEXT net message.
  *
  *  \param p_Buffer The buffer to set.

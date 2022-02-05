@@ -162,6 +162,12 @@ extern "C"
         
     }MRH_SRV_MSG_DATA_AVAIL_DATA;
     
+    typedef struct MRH_SRV_MSG_NO_DATA_DATA_t
+    {
+        uint8_t u8_Data; // The type of data requested
+        
+    }MRH_SRV_MSG_NO_DATA_DATA;
+    
     typedef struct MRH_SRV_MSG_TEXT_DATA_t
     {
         char p_String[MRH_SRV_SIZE_TEXT_STRING]; // UTF-8

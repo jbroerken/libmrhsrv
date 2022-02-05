@@ -393,6 +393,10 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
             break;
             
         // Communication
+        case MRH_SRV_MSG_NO_DATA:
+            TO_MRH_SRV_MSG_NO_DATA((MRH_SRV_MSG_NO_DATA_DATA*)p_Message,
+                                   &(p_Buffer[1]));
+            break;
         case MRH_SRV_MSG_TEXT:
             TO_MRH_SRV_MSG_TEXT((MRH_SRV_MSG_TEXT_DATA*)p_Message,
                                 &(p_Buffer[1]));
