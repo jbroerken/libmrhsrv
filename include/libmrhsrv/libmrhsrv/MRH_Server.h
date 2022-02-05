@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -39,9 +39,6 @@
 #endif
 #ifndef MRH_SRV_DEFAULT_PORT
     #define MRH_SRV_DEFAULT_PORT 16096
-#endif
-#ifndef MRH_SRV_DEFAULT_CONNECTION_CHANNEL
-    #define MRH_SRV_DEFAULT_CONNECTION_CHANNEL "de.mrh.connection"
 #endif
 
 

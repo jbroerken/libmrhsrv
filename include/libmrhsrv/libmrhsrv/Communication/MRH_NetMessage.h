@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -65,6 +65,7 @@ extern "C"
         MRH_SRV_MSG_NO_DATA = 6,                    // No data available
         MRH_SRV_MSG_TEXT = 7,                       // Text data
         MRH_SRV_MSG_LOCATION,                       // Location data
+        MRH_SRV_MSG_NOTIFICATION,                   // Push Notification
         MRH_SRV_MSG_CUSTOM,                         // Custom data
         
         // Bounds
@@ -99,6 +100,7 @@ extern "C"
         MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 5,       // Connection already exists
         MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE = 6,             // Temporary downtime
         MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED = 7,                 // Authentication expired
+        MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE,                   // No device found for connection
         
         // Bounds
         MRH_SRV_NET_MESSAGE_ERROR_MAX = MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED,
@@ -147,7 +149,7 @@ extern "C"
     typedef struct MRH_SRV_S_MSG_AUTH_STATE_DATA_t
     {
         uint8_t u8_Result; // The result of the auth state
-        uint8_t p_Key[MRH_SRV_SIZE_MESSAGE_BUFFER - 2];
+        uint8_t p_Key[MRH_SRV_SIZE_AUTH_KEY];
         
     }MRH_SRV_MSG_AUTH_STATE_DATA;
     
@@ -157,13 +159,14 @@ extern "C"
     
     typedef struct MRH_SRV_MSG_DATA_AVAIL_DATA_t
     {
-        uint8_t p_Key[MRH_SRV_SIZE_MESSAGE_BUFFER - 2];
+        uint8_t u8_Data; // The type of data requested
+        uint8_t p_Key[MRH_SRV_SIZE_AUTH_KEY];
         
     }MRH_SRV_MSG_DATA_AVAIL_DATA;
     
     typedef struct MRH_SRV_MSG_TEXT_DATA_t
     {
-        char p_String[MRH_SRV_SIZE_MESSAGE_BUFFER - 1]; // UTF-8
+        char p_String[MRH_SRV_SIZE_TEXT_STRING]; // UTF-8
         
     }MRH_SRV_MSG_TEXT_DATA;
     
@@ -176,9 +179,15 @@ extern "C"
         
     }MRH_SRV_MSG_LOCATION_DATA;
     
+    typedef struct MRH_SRV_MSG_NOTIFICATION_DATA_t
+    {
+        char p_String[MRH_SRV_SIZE_NOTIFICATION_STRING]; // UTF-8
+        
+    }MRH_SRV_MSG_NOTIFICATION_DATA;
+    
     typedef struct MRH_SRV_MSG_CUSTOM_DATA_t
     {
-        uint8_t p_Buffer[MRH_SRV_SIZE_MESSAGE_BUFFER - 1];
+        uint8_t p_Buffer[MRH_SRV_SIZE_CUSTOM_BUFFER];
         
     }MRH_SRV_MSG_CUSTOM_DATA;
     

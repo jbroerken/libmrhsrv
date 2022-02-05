@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -47,15 +47,8 @@
 // Server Auth
 //*************************************************************************************
 
-void FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage)
 {
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_MSG_AUTH_REQUEST;
-    ++p_Buffer;
-    
     memcpy(p_Buffer,
            &(p_NetMessage->p_Mail[0]),
            MRH_SRV_SIZE_ACCOUNT_MAIL);
@@ -66,12 +59,12 @@ void FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQ
     
     p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY] = p_NetMessage->u8_ClientType;
     p_Buffer[MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY + 1] = p_NetMessage->u8_Version;
+    
+    return (MRH_SRV_SIZE_ACCOUNT_MAIL + MRH_SRV_SIZE_DEVICE_KEY + 2);
 }
 
 void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    ++p_Buffer;
-    
     memcpy(&(p_NetMessage->p_Salt[0]),
            p_Buffer,
            MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT);
@@ -87,62 +80,53 @@ void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_NetMessage
     p_NetMessage->u8_HashType = p_Buffer[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT + sizeof(uint32_t)];
 }
 
-void FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage)
 {
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_MSG_AUTH_PROOF;
-    ++p_Buffer;
-    
     memcpy(p_Buffer,
            &(p_NetMessage->p_NonceHash[0]),
            MRH_SRV_SIZE_NONCE_HASH);
+    
+    return MRH_SRV_SIZE_NONCE_HASH;
 }
 
 void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    ++p_Buffer;
-    
     p_NetMessage->u8_Result = p_Buffer[0];
     
     memcpy(p_NetMessage->p_Key,
            &(p_Buffer[1]),
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 2);
+           MRH_SRV_SIZE_AUTH_KEY);
 }
 
 //*************************************************************************************
 // Communication
 //*************************************************************************************
 
-void FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage)
 {
-    p_Buffer[0] = MRH_SRV_MSG_DATA_AVAIL;
-    ++p_Buffer;
+    p_Buffer[0] = p_NetMessage->u8_Data;
     
-    memcpy(p_Buffer,
+    memcpy(&(p_Buffer[1]),
            &(p_NetMessage->p_Key[0]),
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 2);
+           MRH_SRV_SIZE_AUTH_KEY);
+    
+    return (MRH_SRV_SIZE_AUTH_KEY + 1);
 }
 
-void FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
 {
-    p_Buffer[0] = MRH_SRV_MSG_TEXT;
-    ++p_Buffer;
-    
     memcpy(p_Buffer,
            &(p_NetMessage->p_String[0]),
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
+           MRH_SRV_SIZE_TEXT_STRING);
+    
+    return MRH_SRV_SIZE_TEXT_STRING;
 }
 
 void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    ++p_Buffer;
-    
     memcpy(&(p_NetMessage->p_String[0]),
            p_Buffer,
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
+           MRH_SRV_SIZE_TEXT_STRING);
 }
 
 static inline float SwapFloatBytes(float f32_Source)
@@ -158,15 +142,8 @@ static inline float SwapFloatBytes(float f32_Source)
     return *((float*)p_Result);
 }
 
-void FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage)
 {
-    memset(p_Buffer,
-           '\0',
-           MRH_SRV_SIZE_MESSAGE_BUFFER);
-    
-    p_Buffer[0] = MRH_SRV_MSG_LOCATION;
-    ++p_Buffer;
-    
     if (IS_BIG_ENDIAN)
     {
         float f32_Latitude = SwapFloatBytes(p_NetMessage->f32_Latitude);
@@ -202,12 +179,12 @@ void FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DAT
                &(p_NetMessage->f32_Facing),
                sizeof(float));
     }
+    
+    return (sizeof(float) * 4);
 }
 
 void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    ++p_Buffer;
-    
     memcpy(&(p_NetMessage->f32_Latitude),
            p_Buffer,
            sizeof(float));
@@ -230,21 +207,27 @@ void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint
     }
 }
 
-void FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage)
+size_t FROM_MRH_SRV_MSG_NOTIFICATION(uint8_t* p_Buffer, const MRH_SRV_MSG_NOTIFICATION_DATA* p_NetMessage)
 {
-    p_Buffer[0] = MRH_SRV_MSG_CUSTOM;
-    ++p_Buffer;
+    memcpy(p_Buffer,
+           &(p_NetMessage->p_String[0]),
+           MRH_SRV_SIZE_NOTIFICATION_STRING);
     
+    return MRH_SRV_SIZE_NOTIFICATION_STRING;
+}
+
+size_t FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage)
+{
     memcpy(p_Buffer,
            &(p_NetMessage->p_Buffer[0]),
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
+           MRH_SRV_SIZE_CUSTOM_BUFFER);
+    
+    return MRH_SRV_SIZE_CUSTOM_BUFFER;
 }
 
 void TO_MRH_SRV_MSG_CUSTOM(MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    ++p_Buffer;
-    
     memcpy(p_NetMessage->p_Buffer,
            p_Buffer,
-           MRH_SRV_SIZE_MESSAGE_BUFFER - 1);
+           MRH_SRV_SIZE_CUSTOM_BUFFER);
 }

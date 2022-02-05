@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -132,7 +132,7 @@ extern "C"
      *
      *  \param p_Server The server to check.
      *  \param p_Buffer The buffer to write the message. The buffer has to be of size
-     *                  MRH_SRV_SIZE_MESSAGE_BUFFER.
+     *                  MRH_SRV_SIZE_MESSAGE_BUFFER_MAX.
      *  \param p_Password The password to use for message data decryption. NULL skips
      *                    decryption. The buffer has to be of size
      *                    MRH_SRV_SIZE_DEVICE_PASSWORD.
@@ -144,12 +144,11 @@ extern "C"
     extern MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_Buffer, const char* p_Password);
     
     /**
-     *  Set the data of a recieved message with a message buffer. The given buffer has to
-     *  match the recieve buffer size.
+     *  Set the data of a recieved message with a message buffer.
      *
      *  \param p_Message The message to set.
-     *  \param p_Buffer The buffer containing the message data. The buffer has to be of size
-     *                  MRH_SRV_SIZE_MESSAGE_BUFFER.
+     *  \param p_Buffer The buffer containing the message data as recieved by
+     *                  MRH_SRV_RecieveMessage().
      *
      *  \return 0 on success, -1 on failure.
      */

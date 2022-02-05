@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -247,15 +247,15 @@ int MRH_SRV_IsConnected(MRH_Srv_Server* p_Server)
 // Encryption
 //*************************************************************************************
 
-static inline size_t MRH_SRV_GetEncryptedSize()
+static inline size_t MRH_SRV_GetEncryptedSize(size_t us_MessageSize)
 {
     // Messages are [Nonce][Encrypted Buffer (MAC + Message Bytes)]
     return crypto_secretbox_NONCEBYTES +
            crypto_secretbox_MACBYTES +
-           MRH_SRV_SIZE_MESSAGE_BUFFER;
+           us_MessageSize;
 }
 
-static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageBuffer, const char* p_Password)
+static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageBuffer, size_t us_MessageSize, const char* p_Password)
 {
     if (p_Password == NULL)
     {
@@ -271,7 +271,7 @@ static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageB
     
     if (crypto_secretbox_easy(&(p_EncryptedBuffer[crypto_secretbox_NONCEBYTES]),
                               p_MessageBuffer,
-                              MRH_SRV_SIZE_MESSAGE_BUFFER,
+                              us_MessageSize,
                               p_Nonce,
                               p_Key) != 0)
     {
@@ -281,7 +281,7 @@ static int MRH_SRV_Encrypt(uint8_t* p_EncryptedBuffer, const uint8_t* p_MessageB
     return 0;
 }
 
-static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedBuffer, const char* p_Password)
+static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedBuffer, size_t us_EncryptedSize, const char* p_Password)
 {
     if (p_Password == NULL)
     {
@@ -296,7 +296,7 @@ static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedB
     
     if (crypto_secretbox_open_easy(p_MessageBuffer,
                                    &(p_EncryptedBuffer[crypto_secretbox_NONCEBYTES]),
-                                   crypto_secretbox_MACBYTES + MRH_SRV_SIZE_MESSAGE_BUFFER,
+                                   crypto_secretbox_MACBYTES + us_EncryptedSize,
                                    p_Nonce,
                                    p_Key) != 0)
     {
@@ -328,19 +328,33 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
         }
         
         // Needs to be decrypted?
-        if (p_MsQuic->p_Recieved[i].us_SizeCur == MRH_SRV_GetEncryptedSize())
+        switch (p_MsQuic->p_Recieved[i].p_Buffer[0])
         {
-            if (p_Password == NULL || MRH_SRV_Decrypt(p_Buffer, &(p_MsQuic->p_Recieved[i].p_Buffer[0]), p_Password) < 0)
-            {
-                MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
-            }
-        }
-        else
-        {
-            // No encprytion, simply copy
-            memcpy(p_Buffer,
-                   &(p_MsQuic->p_Recieved[i].p_Buffer[0]),
-                   p_MsQuic->p_Recieved[i].us_SizeCur);
+            case MRH_SRV_MSG_TEXT:
+            case MRH_SRV_MSG_LOCATION:
+            case MRH_SRV_MSG_CUSTOM:
+                // @NOTE: Exclude message id from decryption!
+                if (MRH_SRV_Decrypt(&(p_Buffer[1]),
+                                    &(p_MsQuic->p_Recieved[i].p_Buffer[1]),
+                                    p_MsQuic->p_Recieved[i].us_SizeCur - 1,
+                                    p_Password) < 0)
+                {
+                    MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
+                    p_Buffer[0] = MRH_SRV_MSG_UNK;
+                }
+                else
+                {
+                    p_Buffer[0] = p_MsQuic->p_Recieved[i].p_Buffer[0];
+                }
+                break;
+                
+            default:
+                // No encprytion, simply copy
+                memcpy(p_Buffer,
+                       &(p_MsQuic->p_Recieved[i].p_Buffer[0]),
+                       p_MsQuic->p_Recieved[i].us_SizeCur);
+                break;
+                
         }
         
         // Set as read
@@ -370,21 +384,26 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
         
         // Server Auth
         case MRH_SRV_MSG_AUTH_CHALLENGE:
-            TO_MRH_SRV_MSG_AUTH_CHALLENGE((MRH_SRV_MSG_AUTH_CHALLENGE_DATA*)p_Message, p_Buffer);
+            TO_MRH_SRV_MSG_AUTH_CHALLENGE((MRH_SRV_MSG_AUTH_CHALLENGE_DATA*)p_Message,
+                                          &(p_Buffer[1]));
             break;
         case MRH_SRV_MSG_AUTH_STATE:
-            TO_MRH_SRV_MSG_AUTH_STATE((MRH_SRV_MSG_AUTH_STATE_DATA*)p_Message, p_Buffer);
+            TO_MRH_SRV_MSG_AUTH_STATE((MRH_SRV_MSG_AUTH_STATE_DATA*)p_Message,
+                                      &(p_Buffer[1]));
             break;
             
         // Communication
         case MRH_SRV_MSG_TEXT:
-            TO_MRH_SRV_MSG_TEXT((MRH_SRV_MSG_TEXT_DATA*)p_Message, p_Buffer);
+            TO_MRH_SRV_MSG_TEXT((MRH_SRV_MSG_TEXT_DATA*)p_Message,
+                                &(p_Buffer[1]));
             break;
         case MRH_SRV_MSG_LOCATION:
-            TO_MRH_SRV_MSG_LOCATION((MRH_SRV_MSG_LOCATION_DATA*)p_Message, p_Buffer);
+            TO_MRH_SRV_MSG_LOCATION((MRH_SRV_MSG_LOCATION_DATA*)p_Message,
+                                    &(p_Buffer[1]));
             break;
         case MRH_SRV_MSG_CUSTOM:
-            TO_MRH_SRV_MSG_CUSTOM((MRH_SRV_MSG_CUSTOM_DATA*)p_Message, p_Buffer);
+            TO_MRH_SRV_MSG_CUSTOM((MRH_SRV_MSG_CUSTOM_DATA*)p_Message,
+                                  &(p_Buffer[1]));
             break;
             
         /**
@@ -441,9 +460,13 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     }
     
     // Now, create or expand the buffer as needed
-    uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER];
+    uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER_MAX];
+    size_t us_MessageSize = 1; // The real message size, start with message id
     
     int i_Encrypt; // Define if message uses end to end encryption
+    
+    // Set message id
+    p_MessageBuffer[0] = (uint8_t)e_Message;
     
     // Grab data from the message to send
     switch (e_Message)
@@ -454,29 +477,35 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         
         // Server Auth
         case MRH_SRV_MSG_AUTH_REQUEST:
-            FROM_MRH_SRV_MSG_AUTH_REQUEST(p_MessageBuffer, (const MRH_SRV_MSG_AUTH_REQUEST_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_AUTH_REQUEST(&(p_MessageBuffer[1]),
+                                                            (const MRH_SRV_MSG_AUTH_REQUEST_DATA*)p_Data);
             i_Encrypt = -1;
             break;
         case MRH_SRV_MSG_AUTH_PROOF:
-            FROM_MRH_SRV_MSG_AUTH_PROOF(p_MessageBuffer, (const MRH_SRV_MSG_AUTH_PROOF_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_AUTH_PROOF(&(p_MessageBuffer[1]),
+                                                          (const MRH_SRV_MSG_AUTH_PROOF_DATA*)p_Data);
             i_Encrypt = -1;
             break;
             
         // Communication
         case MRH_SRV_MSG_DATA_AVAIL:
-            FROM_MRH_SRV_MSG_DATA_AVAIL(p_MessageBuffer, (const MRH_SRV_MSG_DATA_AVAIL_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_DATA_AVAIL(&(p_MessageBuffer[1]),
+                                                          (const MRH_SRV_MSG_DATA_AVAIL_DATA*)p_Data);
             i_Encrypt = -1;
             break;
         case MRH_SRV_MSG_TEXT:
-            FROM_MRH_SRV_MSG_TEXT(p_MessageBuffer, (const MRH_SRV_MSG_TEXT_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_TEXT(&(p_MessageBuffer[1]),
+                                                    (const MRH_SRV_MSG_TEXT_DATA*)p_Data);
             i_Encrypt = 0;
             break;
         case MRH_SRV_MSG_LOCATION:
-            FROM_MRH_SRV_MSG_LOCATION(p_MessageBuffer, (const MRH_SRV_MSG_LOCATION_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_LOCATION(&(p_MessageBuffer[1]),
+                                                        (const MRH_SRV_MSG_LOCATION_DATA*)p_Data);
             i_Encrypt = 0;
             break;
         case MRH_SRV_MSG_CUSTOM:
-            FROM_MRH_SRV_MSG_CUSTOM(p_MessageBuffer, (const MRH_SRV_MSG_CUSTOM_DATA*)p_Data);
+            us_MessageSize += FROM_MRH_SRV_MSG_CUSTOM(&(p_MessageBuffer[1]),
+                                                      (const MRH_SRV_MSG_CUSTOM_DATA*)p_Data);
             i_Encrypt = 0;
             break;
             
@@ -502,11 +531,11 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     
     if (i_Encrypt == 0)
     {
-        us_BufferSize += MRH_SRV_GetEncryptedSize();
+        us_BufferSize += MRH_SRV_GetEncryptedSize(us_MessageSize);
     }
     else
     {
-        us_BufferSize += MRH_SRV_SIZE_MESSAGE_BUFFER;
+        us_BufferSize += us_MessageSize;
     }
     
     if (p_Message->p_Buffer == NULL || p_Message->us_SizeMax < us_BufferSize)
@@ -521,10 +550,17 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         p_Message->us_SizeMax = us_BufferSize;
     }
     
-    // And now write the message contents
+    // And now write the message content
     if (i_Encrypt == 0)
     {
-        if (MRH_SRV_Encrypt(&(p_Message->p_Buffer[sizeof(QUIC_BUFFER)]), p_MessageBuffer, p_Password) < 0)
+        // Set net message
+        p_Message->p_Buffer[sizeof(QUIC_BUFFER)] = p_MessageBuffer[0];
+        
+        // Encrypt message data
+        if (MRH_SRV_Encrypt(&(p_Message->p_Buffer[sizeof(QUIC_BUFFER) + 1]),
+                            &(p_MessageBuffer[1]),
+                            us_MessageSize - 1,
+                            p_Password) < 0)
         {
             MRH_ERR_SetServerError(MRH_SERVER_ERROR_ENCRYPTION_FAILED);
             p_Message->i_State = MRH_MSQ_MESSAGE_FREE;
@@ -535,7 +571,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     {
         memcpy(&(p_Message->p_Buffer[sizeof(QUIC_BUFFER)]),
                p_MessageBuffer,
-               MRH_SRV_SIZE_MESSAGE_BUFFER);
+               us_MessageSize);
     }
     
     p_Message->us_SizeCur = us_BufferSize;

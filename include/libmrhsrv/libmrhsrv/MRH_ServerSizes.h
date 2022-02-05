@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -42,7 +42,13 @@
 #define MRH_SRV_SIZE_DEVICE_KEY 25
 #define MRH_SRV_SIZE_DEVICE_PASSWORD MRH_SRV_SIZE_ACCOUNT_PASSWORD // Uses same size for sodium
 
-#define MRH_SRV_SIZE_MESSAGE_BUFFER 1024 // Recieve / send size
+#define MRH_SRV_SIZE_AUTH_KEY 512
+
+#define MRH_SRV_SIZE_MESSAGE_BUFFER_MAX 1024 // Recieve / send size
+
+#define MRH_SRV_SIZE_TEXT_STRING MRH_SRV_SIZE_MESSAGE_BUFFER_MAX - 1
+#define MRH_SRV_SIZE_CUSTOM_BUFFER MRH_SRV_SIZE_MESSAGE_BUFFER_MAX - 1
+#define MRH_SRV_SIZE_NOTIFICATION_STRING 256
 
 
 #endif /* MRH_ServerSizes_h */

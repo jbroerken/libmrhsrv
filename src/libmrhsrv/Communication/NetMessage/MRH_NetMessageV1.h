@@ -1,6 +1,6 @@
 /**
  *  libmrhsrv
- *  Copyright (C) 2021 Jens Brörken
+ *  Copyright (C) 2021 - 2022 Jens Brörken
  *
  *  This software is provided 'as-is', without any express or implied
  *  warranty.  In no event will the authors be held liable for any damages
@@ -41,9 +41,11 @@
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_AUTH_REQUEST(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_REQUEST_DATA* p_NetMessage);
 
 /**
  *  Set the data for a given TO_MRH_SRV_MSG_AUTH_CHALLENGE net message with a given buffer.
@@ -59,9 +61,11 @@ extern void TO_MRH_SRV_MSG_AUTH_CHALLENGE(MRH_SRV_MSG_AUTH_CHALLENGE_DATA* p_Net
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_AUTH_PROOF(uint8_t* p_Buffer, const MRH_SRV_MSG_AUTH_PROOF_DATA* p_NetMessage);
 
 /**
  *  Set the data for a given TO_MRH_SRV_MSG_AUTH_STATE net message with a given buffer.
@@ -81,18 +85,22 @@ extern void TO_MRH_SRV_MSG_AUTH_STATE(MRH_SRV_MSG_AUTH_STATE_DATA* p_NetMessage,
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage);
 
 /**
  *  Set the message buffer for a given MRH_SRV_MSG_TEXT net message.
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage);
 
 /**
  *  Set the data for a given MRH_SRV_MSG_TEXT net message with a given buffer.
@@ -108,9 +116,22 @@ extern void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_LOCATION(uint8_t* p_Buffer, const MRH_SRV_MSG_LOCATION_DATA* p_NetMessage);
+
+/**
+ *  Set the message buffer for a given MRH_SRV_MSG_NOTIFICATION net message.
+ *
+ *  \param p_Buffer The buffer to set.
+ *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
+ */
+
+extern size_t FROM_MRH_SRV_MSG_NOTIFICATION(uint8_t* p_Buffer, const MRH_SRV_MSG_NOTIFICATION_DATA* p_NetMessage);
 
 /**
  *  Set the data for a given MRH_SRV_MSG_LOCATION net message with a given buffer.
@@ -126,9 +147,11 @@ extern void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, con
  *
  *  \param p_Buffer The buffer to set.
  *  \param p_NetMessage The net message to use.
+ *
+ *  \return The message buffer size in bytes.
  */
 
-extern void FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage);
+extern size_t FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage);
 
 /**
  *  Set the data for a given MRH_SRV_MSG_CUSTOM net message with a given buffer.
