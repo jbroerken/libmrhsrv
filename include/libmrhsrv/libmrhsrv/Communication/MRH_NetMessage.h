@@ -99,7 +99,7 @@ extern "C"
         MRH_SRV_NET_MESSAGE_ERR_SA_ACCOUNT = 4,                 // Account data given was wrong
         MRH_SRV_NET_MESSAGE_ERR_SA_ALREADY_CONNECTED = 5,       // Connection already exists
         MRH_SRV_NET_MESSAGE_ERR_SA_MAINTENANCE = 6,             // Temporary downtime
-        MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED = 7,                 // Authentication expired
+        MRH_SRV_NET_MESSAGE_ERR_SA_UNK_ACTOR = 7,               // Authentication expired
         MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE,                   // No device found for connection
         
         // Bounds
