@@ -129,8 +129,12 @@ QUIC_STATUS QUIC_API MRH_MsQuicStreamCallback(_In_ HQUIC Stream, _In_opt_ void* 
     {
         case QUIC_STREAM_EVENT_SEND_COMPLETE:
         {
-            ((MRH_MsQuicMessage*)(Event->SEND_COMPLETE.ClientContext))->us_SizeCur = 0;
-            ((MRH_MsQuicMessage*)(Event->SEND_COMPLETE.ClientContext))->i_State = MRH_MSQ_MESSAGE_FREE;
+            p_MsQuic->us_SizeCur = 0;
+            p_MsQuic->i_State = MRH_MSQ_MESSAGE_FREE;
+            
+            p_MsQuic->p_MsQuicAPI->StreamShutdown(Stream,
+                                                  QUIC_STREAM_SHUTDOWN_FLAG_GRACEFUL,
+                                                  0);
             break;
         }
             
@@ -180,10 +184,7 @@ QUIC_STATUS QUIC_API MRH_MsQuicStreamCallback(_In_ HQUIC Stream, _In_opt_ void* 
                 
         case QUIC_STREAM_EVENT_SHUTDOWN_COMPLETE:
         {
-            if (p_MsQuic != NULL)
-            {
-                p_MsQuic->p_MsQuicAPI->StreamClose(Stream);
-            }
+            p_MsQuic->p_MsQuicAPI->StreamClose(Stream);
             break;
         }
             

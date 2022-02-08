@@ -296,7 +296,7 @@ static int MRH_SRV_Decrypt(uint8_t* p_MessageBuffer, const uint8_t* p_EncryptedB
     
     if (crypto_secretbox_open_easy(p_MessageBuffer,
                                    &(p_EncryptedBuffer[crypto_secretbox_NONCEBYTES]),
-                                   crypto_secretbox_MACBYTES + us_EncryptedSize,
+                                   us_EncryptedSize - crypto_secretbox_NONCEBYTES,
                                    p_Nonce,
                                    p_Key) != 0)
     {
@@ -466,7 +466,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
     }
     
     // Now, create or expand the buffer as needed
-    uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER_MAX];
+    uint8_t p_MessageBuffer[MRH_SRV_SIZE_MESSAGE_BUFFER_MAX] = { '\0' };
     size_t us_MessageSize = 1; // The real message size, start with message id
     
     int i_Encrypt; // Define if message uses end to end encryption
@@ -544,7 +544,18 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
         us_BufferSize += us_MessageSize;
     }
     
-    if (p_Message->p_Buffer == NULL || p_Message->us_SizeMax < us_BufferSize)
+    if (p_Message->p_Buffer == NULL)
+    {
+        if ((p_Message->p_Buffer = (uint8_t*)malloc(us_BufferSize)) == NULL)
+        {
+            MRH_ERR_SetServerError(MRH_SERVER_ERROR_GENERAL_MALLOC);
+            p_Message->i_State = MRH_MSQ_MESSAGE_FREE;
+            return -1;
+        }
+        
+        p_Message->us_SizeMax = us_BufferSize;
+    }
+    else if (p_Message->us_SizeMax < us_BufferSize)
     {
         if ((p_Message->p_Buffer = (uint8_t*)realloc(p_Message->p_Buffer, us_BufferSize)) == NULL)
         {
@@ -612,7 +623,7 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
                                                            p_QuicBuffer,
                                                            1,
                                                            QUIC_SEND_FLAG_FIN,
-                                                           p_Message))) /* send context */
+                                                           NULL)))
     {
         MRH_ERR_SetServerError(MRH_SERVER_ERROR_SEND_STREAM_SEND);
         p_MsQuic->p_MsQuicAPI->StreamClose(p_Stream);
