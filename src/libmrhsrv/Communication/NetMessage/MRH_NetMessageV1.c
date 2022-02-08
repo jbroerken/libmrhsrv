@@ -244,11 +244,13 @@ void TO_MRH_SRV_MSG_LOCATION(MRH_SRV_MSG_LOCATION_DATA* p_NetMessage, const uint
 
 size_t FROM_MRH_SRV_MSG_NOTIFICATION(uint8_t* p_Buffer, const MRH_SRV_MSG_NOTIFICATION_DATA* p_NetMessage)
 {
+    size_t us_StringLen = strnlen(p_NetMessage->p_String, MRH_SRV_SIZE_NOTIFICATION_STRING);
+    
     memcpy(p_Buffer,
            &(p_NetMessage->p_String[0]),
-           MRH_SRV_SIZE_NOTIFICATION_STRING);
+           us_StringLen);
     
-    return MRH_SRV_SIZE_NOTIFICATION_STRING;
+    return us_StringLen;
 }
 
 size_t FROM_MRH_SRV_MSG_CUSTOM(uint8_t* p_Buffer, const MRH_SRV_MSG_CUSTOM_DATA* p_NetMessage)
