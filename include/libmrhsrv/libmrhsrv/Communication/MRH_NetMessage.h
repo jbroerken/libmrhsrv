@@ -103,7 +103,7 @@ extern "C"
         MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE,                   // No device found for connection
         
         // Bounds
-        MRH_SRV_NET_MESSAGE_ERROR_MAX = MRH_SRV_NET_MESSAGE_ERR_SA_EXPIRED,
+        MRH_SRV_NET_MESSAGE_ERROR_MAX = MRH_SRV_NET_MESSAGE_ERR_SA_NO_DEVICE,
         
         MRH_SRV_NET_MESSAGE_ERROR_COUNT = MRH_SRV_NET_MESSAGE_ERROR_MAX + 1
         
@@ -170,8 +170,8 @@ extern "C"
     
     typedef struct MRH_SRV_MSG_TEXT_DATA_t
     {
-        char p_String[MRH_SRV_SIZE_TEXT_STRING]; // UTF-8
         uint64_t u64_TimestampS;
+        char p_String[MRH_SRV_SIZE_TEXT_STRING]; // UTF-8
         
     }MRH_SRV_MSG_TEXT_DATA;
     

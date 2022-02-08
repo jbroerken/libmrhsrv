@@ -112,36 +112,40 @@ void TO_MRH_SRV_MSG_NO_DATA(MRH_SRV_MSG_NO_DATA_DATA* p_NetMessage, const uint8_
 
 size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
 {
-    memcpy(p_Buffer,
-           &(p_NetMessage->p_String[0]),
-           MRH_SRV_SIZE_TEXT_STRING);
-    
     if (IS_BIG_ENDIAN)
     {
         uint64_t u64_TimestampS = bswap_64(p_NetMessage->u64_TimestampS);
         
-        memcpy(&(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+        memcpy(p_Buffer,
                &(u64_TimestampS),
                sizeof(uint64_t));
     }
     else
     {
-        memcpy(&(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+        memcpy(p_Buffer,
                &(p_NetMessage->u64_TimestampS),
                sizeof(uint64_t));
     }
     
-    return (MRH_SRV_SIZE_TEXT_STRING + sizeof(uint64_t));
+    size_t us_StringLen = strnlen(p_NetMessage->p_String, MRH_SRV_SIZE_TEXT_STRING);
+    
+    memcpy(&(p_Buffer[sizeof(uint64_t)]),
+           &(p_NetMessage->p_String[0]),
+           us_StringLen);
+    
+    return (us_StringLen + sizeof(uint64_t));
 }
 
 void TO_MRH_SRV_MSG_TEXT(MRH_SRV_MSG_TEXT_DATA* p_NetMessage, const uint8_t* p_Buffer)
 {
-    memcpy(&(p_NetMessage->p_String[0]),
-           p_Buffer,
-           MRH_SRV_SIZE_TEXT_STRING);
+    size_t us_StringLen = strnlen((const char*)&(p_Buffer[sizeof(uint64_t)]), MRH_SRV_SIZE_TEXT_STRING);
+    
     memcpy(&(p_NetMessage->u64_TimestampS),
-           &(p_Buffer[MRH_SRV_SIZE_TEXT_STRING]),
+           p_Buffer,
            sizeof(uint64_t));
+    memcpy(&(p_NetMessage->p_String[0]),
+           &(p_Buffer[sizeof(uint64_t)]),
+           us_StringLen);
     
     if (IS_BIG_ENDIAN)
     {

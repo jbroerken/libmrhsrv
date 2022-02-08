@@ -320,6 +320,8 @@ MRH_Srv_NetMessage MRH_SRV_RecieveMessage(MRH_Srv_Server* p_Server, uint8_t* p_B
     
     MRH_MsQuicConnection* p_MsQuic = p_Server->p_MsQuic;
     
+    memset(p_Buffer, '\0', MRH_SRV_SIZE_MESSAGE_BUFFER_MAX);
+    
     for (size_t i = 0; i < MRH_SRV_MESSAGE_BUFFER_COUNT; ++i)
     {
         if (p_MsQuic->p_Recieved[i].i_State != MRH_MSQ_MESSAGE_COMPLETE)

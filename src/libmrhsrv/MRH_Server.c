@@ -107,8 +107,6 @@ MRH_Srv_Context* MRH_SRV_Init(MRH_Srv_Actor e_Client, int i_MaxServerCount, int 
     
     c_Settings.PeerUnidiStreamCount = i_MaxServerCount * (MRH_SRV_MESSAGE_BUFFER_COUNT * 2); // Send + Recieve
     c_Settings.IsSet.PeerUnidiStreamCount = TRUE;
-    //c_Settings.PeerBidiStreamCount = 1024;
-    //c_Settings.IsSet.PeerBidiStreamCount = TRUE;
     c_Settings.IdleTimeoutMs = i_TimeoutMS;
     c_Settings.IsSet.IdleTimeoutMs = TRUE;
 
