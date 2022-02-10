@@ -395,10 +395,6 @@ int MRH_SRV_SetNetMessage(void* p_Message, const uint8_t* p_Buffer)
             break;
             
         // Communication
-        case MRH_SRV_MSG_NO_DATA:
-            TO_MRH_SRV_MSG_NO_DATA((MRH_SRV_MSG_NO_DATA_DATA*)p_Message,
-                                   &(p_Buffer[1]));
-            break;
         case MRH_SRV_MSG_TEXT:
             TO_MRH_SRV_MSG_TEXT((MRH_SRV_MSG_TEXT_DATA*)p_Message,
                                 &(p_Buffer[1]));
@@ -494,11 +490,6 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
             break;
             
         // Communication
-        case MRH_SRV_MSG_DATA_AVAIL:
-            us_MessageSize += FROM_MRH_SRV_MSG_DATA_AVAIL(&(p_MessageBuffer[1]),
-                                                          (const MRH_SRV_MSG_DATA_AVAIL_DATA*)p_Data);
-            i_Encrypt = -1;
-            break;
         case MRH_SRV_MSG_TEXT:
             us_MessageSize += FROM_MRH_SRV_MSG_TEXT(&(p_MessageBuffer[1]),
                                                     (const MRH_SRV_MSG_TEXT_DATA*)p_Data);
@@ -508,6 +499,11 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
             us_MessageSize += FROM_MRH_SRV_MSG_LOCATION(&(p_MessageBuffer[1]),
                                                         (const MRH_SRV_MSG_LOCATION_DATA*)p_Data);
             i_Encrypt = 0;
+            break;
+        case MRH_SRV_MSG_NOTIFICATION:
+            us_MessageSize += FROM_MRH_SRV_MSG_NOTIFICATION(&(p_MessageBuffer[1]),
+                                                            (const MRH_SRV_MSG_NOTIFICATION_DATA*)p_Data);
+            i_Encrypt = -1; // Needs to be readable for push
             break;
         case MRH_SRV_MSG_CUSTOM:
             us_MessageSize += FROM_MRH_SRV_MSG_CUSTOM(&(p_MessageBuffer[1]),

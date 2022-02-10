@@ -98,18 +98,6 @@ void TO_MRH_SRV_MSG_AUTH_RESULT(MRH_SRV_MSG_AUTH_RESULT_DATA* p_NetMessage, cons
 // Communication
 //*************************************************************************************
 
-size_t FROM_MRH_SRV_MSG_DATA_AVAIL(uint8_t* p_Buffer, MRH_SRV_MSG_DATA_AVAIL_DATA const* p_NetMessage)
-{
-    p_Buffer[0] = p_NetMessage->u8_Data;
-    
-    return 1;
-}
-
-void TO_MRH_SRV_MSG_NO_DATA(MRH_SRV_MSG_NO_DATA_DATA* p_NetMessage, const uint8_t* p_Buffer)
-{
-    p_NetMessage->u8_Data = p_Buffer[0];
-}
-
 size_t FROM_MRH_SRV_MSG_TEXT(uint8_t* p_Buffer, const MRH_SRV_MSG_TEXT_DATA* p_NetMessage)
 {
     if (IS_BIG_ENDIAN)
