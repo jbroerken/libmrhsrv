@@ -61,9 +61,10 @@ extern "C"
         MRH_SRV_MSG_AUTH_RESULT = 4,                // Authentication result
         
         // Communication
-        MRH_SRV_MSG_GET_DATA = 5,                   // Request data
-        MRH_SRV_MSG_NO_DATA = 6,                    // No data available
-        MRH_SRV_MSG_TEXT = 7,                       // Text data
+        MRH_SRV_MSG_DATA_AVAILABLE = 5,             // Data is available to be requested
+        MRH_SRV_MSG_GET_DATA = 6,                   // Request data
+        MRH_SRV_MSG_NO_DATA = 7,                    // No data available
+        MRH_SRV_MSG_TEXT,                           // Text data
         MRH_SRV_MSG_LOCATION,                       // Location data
         MRH_SRV_MSG_NOTIFICATION,                   // Push Notification
         MRH_SRV_MSG_CUSTOM,                         // Custom data
@@ -132,7 +133,7 @@ extern "C"
         
     }MRH_SRV_MSG_AUTH_REQUEST_DATA;
     
-    typedef struct MRH_SRV_S_MSG_AUTH_CHALLENGE_DATA_t
+    typedef struct MRH_SRV_MSG_AUTH_CHALLENGE_DATA_t
     {
         char p_Salt[MRH_SRV_SIZE_ACCOUNT_PASSWORD_SALT]; // Salt to use for pw hash
         uint32_t u32_Nonce; // Nonce to hash
@@ -140,13 +141,13 @@ extern "C"
         
     }MRH_SRV_MSG_AUTH_CHALLENGE_DATA;
     
-    typedef struct MRH_SRV_C_MSG_AUTH_PROOF_DATA_t
+    typedef struct MRH_SRV_MSG_AUTH_PROOF_DATA_t
     {
         uint8_t p_NonceHash[MRH_SRV_SIZE_NONCE_HASH]; // Created hash
         
     }MRH_SRV_MSG_AUTH_PROOF_DATA;
     
-    typedef struct MRH_SRV_S_MSG_AUTH_RESULT_DATA_t
+    typedef struct MRH_SRV_MSG_AUTH_RESULT_DATA_t
     {
         uint8_t u8_Result; // The result of the auth state
         
