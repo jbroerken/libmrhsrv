@@ -164,7 +164,7 @@ extern "C"
      *
      *  \param p_Server The server to send to.
      *  \param e_Message The type of net message to send.
-     *  \param p_Data The net message data to send.
+     *  \param p_Data The net message data to send (if any).
      *  \param p_Password The password to use for message data encryption. NULL skips
      *                    encryption. The buffer has to be of size
      *                    MRH_SRV_SIZE_DEVICE_PASSWORD.

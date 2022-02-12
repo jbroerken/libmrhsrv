@@ -490,6 +490,9 @@ int MRH_SRV_SendMessage(MRH_Srv_Server* p_Server, MRH_Srv_NetMessage e_Message, 
             break;
             
         // Communication
+        case MRH_SRV_MSG_GET_DATA:
+            i_Encrypt = -1;
+            break;
         case MRH_SRV_MSG_TEXT:
             us_MessageSize += FROM_MRH_SRV_MSG_TEXT(&(p_MessageBuffer[1]),
                                                     (const MRH_SRV_MSG_TEXT_DATA*)p_Data);
