@@ -61,10 +61,9 @@ extern "C"
         MRH_SRV_MSG_AUTH_RESULT = 4,                // Authentication result
         
         // Communication
-        MRH_SRV_MSG_DATA_AVAIL = 5,                 // Data is available to be retrieved
-        MRH_SRV_MSG_GET_DATA = 6,                   // Request data
-        MRH_SRV_MSG_NO_DATA = 7,                    // No data available
-        MRH_SRV_MSG_TEXT,                           // Text data
+        MRH_SRV_MSG_GET_DATA = 5,                   // Request data
+        MRH_SRV_MSG_NO_DATA = 6,                    // No data available
+        MRH_SRV_MSG_TEXT = 7,                       // Text data
         MRH_SRV_MSG_LOCATION,                       // Location data
         MRH_SRV_MSG_NOTIFICATION,                   // Push Notification
         MRH_SRV_MSG_CUSTOM,                         // Custom data
